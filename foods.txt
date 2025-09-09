@@ -1,0 +1,15 @@
+Cow Milk (100ml),60,3.5,5,3.5
+Oat Milk (100ml),50,1.2,6.5,2
+Egg (1 large, boiled),78,6,0.6,5
+Wheat Bread (1 slice),70,3,13,1
+White Bread (1 slice),65,2,12,1
+Poha (1 plate),250,5,50,3
+Samosa (1 piece),130,2,15,7
+Roti/Chapati (1 piece),120,3,20,3.5
+Aloo Gobi (1 cup),150,4,18,8
+Palak Paneer (1 cup),250,15,10,18
+Chana Masala (1 cup),200,8,30,5
+Chicken Curry (1 cup),280,20,10,18
+Paneer Butter Masala (1 cup),350,18,12,25
+Paneer (100g),265,18,4,20
+Chicken Breast (100g cooked),165,31,0,3.6
