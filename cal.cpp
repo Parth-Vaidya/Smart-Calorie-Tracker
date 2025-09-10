@@ -62,3 +62,26 @@ public:
         return false;
     }
 };
+
+int main(){ LoginSystem system;        
+ if (a == 4)
+        {
+            cout << "Enter user name";
+            cin >> u;
+            cout << "Enter user password";
+            cin >> p;
+            system.registerUser(u, p);
+        }
+
+        else if (a == 3)
+        {
+            cout << "Enter username: ";
+            cin >> u;
+            cout << "Enter password: ";
+            cin >> p;
+            if (system.login(u, p) == true){}
+}
+        else if(a==5){
+            return 0;
+        }
+}
