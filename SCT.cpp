@@ -31,6 +31,15 @@ private:
 
 public: 
 
+
+    Tracker(IDataManager* dm) : dataManager(dm), currentUser(nullptr) {
+        users = dataManager->loadUsers();
+        foodDatabase = dataManager->loadFoodDatabase();
+    }
+
+
+    //register login logout implemented by parth
+
     // this is a helper function should be shifted to the private section
     string getDate() {
         time_t t = time(0);
@@ -49,8 +58,63 @@ public:
 
     }
 
+    //---------------------------//-------------------------------//
 
-    
+    void add_FOOD_TO_LOG(){
+        if (!currentUser)
+        {   
+            console.log("Error : User does not Exist")
+            return 
+        }
+
+        cout<<"\n Select Meal Time "<< endl;
+        cout << "1. Breakfast\n2. Lunch\n3. Dinner\n4. Snacks\n";
+        int choice ; 
+        string mealType;
+        cin<<choice;
+        switch (choice)
+        {
+        case 1:
+
+            mealType = "Breakfast" ; 
+            break;
+
+        case 2:
+            mealType = "Lunch";
+            break;
+
+        case 3:
+            mealType = "Dinner";
+            break;
+
+        case 4: 
+            mealType = "Snacks"; 
+            break;
+
+
+        
+            default:
+                cout<<"Invalid Choice . " <<endl;
+                break;
+        }
+
+        vector<FoodItem> searchResults ; 
+
+        cout << "\nEnter food name to search or add: ";
+
+        string foodName ; 
+        getline(cin , foodName);
+
+
+        
+        
+    }
+
+
+
+
+
+
 };
 
 int main() {
@@ -68,7 +132,9 @@ int main() {
     string lower = t.toLower(s);
     cout<<lower;
 
-//
+//  core functionality
+
+
 
     return 0; 
 }
