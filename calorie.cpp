@@ -1,12 +1,4 @@
-#include <iostream>
-#include <string>
-#include <vector>
-#include <map>
-#include <fstream>
-#include <sstream>
-#include <limits>
-#include <iomanip>
-#include <algorithm>
+#include <bits/stdc++.h>
 using namespace std;
 
 // declare classes 
@@ -43,7 +35,7 @@ public:
         micronutrients[microName] = value;
     }
 
-    // Displays the food item's details
+    // displays the food item's details
     void display() const 
     {
         cout << "    - " << left << setw(20) << name << " | Cal: " << setw(6) << calories << " | P: " << setw(5) << protein << "g" << " | C: " << setw(5) << carbs << "g" << " | F: " << setw(5) << fats << "g" << endl;
@@ -57,6 +49,7 @@ private:
 
 public:
     // Constructor
+    // 002. Aggregation
     Meal(string type) : mealType(type) {}
 
     void addFood(const FoodItem& food) {
@@ -109,6 +102,7 @@ private:
 
 public:
     
+    // 003. Composition
     DailyLog() : date("") 
     {
         meals.emplace("Breakfast", Meal("Breakfast"));
