@@ -10,6 +10,9 @@
 
 using namespace std;
 
+
+// concepts used encapsulation and Abstraction
+
 class IDataManager {
     // Interface for data handling
 };
