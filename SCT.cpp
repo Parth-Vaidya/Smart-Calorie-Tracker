@@ -13,17 +13,7 @@ using namespace std;
 
 // concepts used encapsulation and Abstraction
 
-class IDataManager {
-    // Interface for data handling
-};
 
-class User{
-    // User data
-};
-
-class FoodItem{
-    // Food data
-};
 
 class Tracker {
 private:
@@ -109,8 +99,38 @@ public:
         getline(cin , foodName);
 
 
+
+
         
         
+    }
+
+    void displayDailySummary()
+    {
+        int totalCal = 0, totalPro = 0, totalCarb = 0, totalFat = 0;
+        cout << "\n====== Daily Nutrition Summary ======\n";
+        for (auto &x : dailyIntake)
+        {
+            cout << x.first << " -> Calories:" << x.second[0] << " Protein:" << x.second[1] << " Carbs:" << x.second[2] << " Fats:" << x.second[3] << "\n";
+            totalCal += x.second[0];
+            totalPro += x.second[1];
+            totalCarb += x.second[2];
+            totalFat += x.second[3];
+        }
+        cout << "------------------------------------\n";
+        cout << "TOTAL -> Calories:" << totalCal << " Protein:" << totalPro << " Carbs:" << totalCarb << " Fats:" << totalFat << "\n";
+    }
+
+        void saveDailySummary()
+    {
+        ofstream out(currentUser + "_summary.txt", ios::app);
+        out << "Daily Summary for " << currentUser << ":\n";
+        for (auto &x : dailyIntake)
+        {
+            out << x.first << "," << x.second[0] << "," << x.second[1] << "," << x.second[2] << "," << x.second[3] << "\n";
+        }
+        out << "-----------------------------\n";
+        out.close();
     }
 
 
