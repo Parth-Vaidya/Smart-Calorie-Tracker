@@ -1,40 +1,12 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <fstream>
 #include <iomanip>
+#include <sstream>
+#include <map>
 
 using namespace std;
-
-class FoodItem;
-class Meal;
-class Dailylog;
-class User;
-class Tracker;
-
-class FoodItem
-{
-private:
-    string name;
-    int calories;
-    int protein;
-    int carbs;
-    int fats;
-
-public:
-    FoodItem(string n, int cal, int p, int c, int f)
-        : name(n), calories(c), protein(p), carbs(c), fats(f) {}
-
-    string getname() const { return name; }
-    int getcalories() const { return calories; }
-    int getprotein() const { return protein; }
-    int getcarbs() const { return carbs; }
-    int getfats() const { return fats; }
-
-    void display() const
-    {
-        cout << left << setw(10) << name << "| Cal: " << calories << setw(5) << "| Prot: " << protein << setw(5) << " | Carb: " << setw(5) << carbs << " | Fat: " << setw(5) << fats;
-    }
-};
 
 class User
 {
@@ -60,146 +32,275 @@ public:
     }
 };
 
-// class LoginSystem
-// {
-// private:
-//     vector<User> user;
-
-// public:
-//     void registerUser(const string un, const string p)
-//     {
-//         for (const auto u : user)
-//         {
-//             if (u.getUsername() == un)
-//             {
-//                 cout << "name alrady exist";
-//                 return;
-//             }
-//         }
-
-//         user.push_back(User(un, p));
-//         cout << "User registerted";
-//     }
-
-//     bool login(const string un, const string pass)
-//     {
-//         for (const auto u : user)
-//         {
-//             if (u.getUsername() == un && u.checkpassword() == pass)
-//             {
-//                 cout << "login successful";
-//                 return true;
-//             }
-//         }
-//         cout << "invalid name and paswword";
-//         return false;
-//     }
-// };
-
 class Tracker
 {
-    private:
-    vector<User> user;
+private:
+    string currentUser;
+    map<string, vector<int>> foodDatabase; // food -> {cal, protein, carbs, fats}
+    map<string, vector<int>> dailyIntake;  // meal -> aggregated macros
 
-    public:
+public:
 
+ void loadFoodDatabase()
+    {
+        ifstream in("foodDB.txt");
+        if (!in)
+            return;
+
+        string line;
+        while (getline(in, line))
+        {
+            istringstream iss(line);
+            string food;
+            int cal, pro, carb, fat;
+            getline(iss, food, ',');
+            iss >> cal >> pro >> carb >> fat;
+            foodDatabase[food] = {cal, pro, carb, fat};
+        }
+        in.close();
+    }
+
+        void saveFoodDatabase()
+    {
+        ofstream out("foodDB.txt");
+        for (auto &x : foodDatabase)
+        {
+            out << x.first << "," << x.second[0] << " " << x.second[1] << " " << x.second[2] << " " << x.second[3] << "\n";
+        }
+        out.close();
+    }
     void registerUser()
     {
         string un, p;
-        cout<<"-----Register New User-----\n";
-        cout<<"Enter Username: ";
-        cin>>un;
-        for (const auto u : user)
+        cout << "-----Register New User-----\n";
+        cout << "Enter Username: ";
+        getline(cin, un);
+
+        cout << "Enter Password:";
+        getline(cin, p);
+        string line = un + ","+ p;
+
+        ofstream out("users.txt", ios::app);
+        if (!out)
         {
-            if (u.getUsername() == un)
-            {
-                cout << "name alrady exist";
-                return;
-            }
+            cout << "File could not be opened\n";
+            return;
         }
-        cout<<"Enter Password:";
-        cin>>p;
-        user.push_back(User(un, p));
+        out << "\n"<< line;
+        out.close();
         cout << "User registerted";
     }
 
-    bool loginUser(){
-        string u,p;
-        int a=8;
-        // while(a<=10){
-        cout<<"-------User LogIn-------\n";
-        cout<<"Enter User name:";
-        cin>>u;
-        cout<<"Enter Password:";
-        cin>>p;
-        for(const auto a:user){
-            if(a.getUsername()==u && a.checkpassword()==p){
-                cout<<"Login successfull";
-                // int s=11;
-                // a=s;
-            }
-            else{
-                cout<<"Invalid Credentials!\ntry again";
-                // a++;
-                return false;
+    bool loginUser()
+    {
+        string u, p;
+        ifstream in("users.txt");
+        if (!in) 
+        {
+            cout << "Error: could not open users.txt\n";
+            return false;
+        }
+
+        cout << "-------User LogIn-------\n";
+        cout << "Enter User name:";
+        getline(cin, u);
+        string line;
+        while (getline(in, line))
+        {
+            istringstream iss(line);
+            string f, s;
+            getline(iss, f, ',');
+            getline(iss, s, ',');
+
+            if (f == u)
+            {
+                cout << "Enter Password:";
+                getline(cin, p);
+
+                if (s == p)
+                {
+                    cout << "LogIn Successful\n";
+                    return true;
+                }
+                else
+                {
+                    cout << "Passwords Does not match\n";
+                    return false;
+                }
             }
         }
-    // }   
+        cout << "Username does not exist\n";
+        return false;
+        in.close();
+    }
+
+    void enterMeal()
+    {
+        cout << "\nChoose Meal: 1.Breakfast 2.Lunch 3.Snacks 4.Dinner\n";
+        int choice;
+        cin >> choice;
+        
+        if (choice % 1 != 0) 
+        {
+            cout << "Invalid input. Exiting...\n";
+            return;
+        }
+        cin.ignore();
+        string meal;
+        if (choice == 1)
+            meal = "Breakfast";
+        else if (choice == 2)
+            meal = "Lunch";
+        else if (choice == 3)
+            meal = "Snacks";
+        else if (choice == 4)
+            meal = "Dinner";
+
+        cout << "Start adding food items for " << meal << ". Type 'done' when finished.\n";
+
+        string food;
+        while (true)
+        {
+            cout << "Food: ";
+            getline(cin, food);
+
+            if (food == "done")
+                break;
+
+            if (foodDatabase.find(food) == foodDatabase.end())
+            {
+                cout << "Food not found in database. Enter macros for " << food << ":\n";
+                int cal, pro, carb, fat;
+                cout << "Calories: ";
+                cin >> cal;
+                if(cal % 1 != 0)
+                {
+                    cout << "Not an int!!" << endl;
+                    return;
+                }
+                cout << "Protein: ";
+                cin >> pro;
+                if(pro % 1 != 0)
+                {
+                    cout << "Not an int!!" << endl;
+                    return;
+                }
+                cout << "Carbs: ";
+                cin >> carb;
+                if(carb % 1 != 0)
+                {
+                    cout << "Not an int!!" << endl;
+                    return;
+                }
+                cout << "Fats: ";
+                cin >> fat;
+                if(fat % 1 != 0)
+                {
+                    cout << "Not an int!!" << endl;
+                    return;
+                }
+                cin.ignore();
+                foodDatabase[food] = {cal, pro, carb, fat};
+                saveFoodDatabase();
+            }
+
+            vector<int> macros = foodDatabase[food];
+            if (dailyIntake.find(meal) == dailyIntake.end())
+                dailyIntake[meal] = {0, 0, 0, 0};
+            for (int i = 0; i < 4; i++)
+                dailyIntake[meal][i] += macros[i];
+
+            cout << food << " added successfully!\n";
+        }
+
+        cout << meal << " completed.\n";
+
+        if (meal == "Dinner")
+        {
+            displayDailySummary();
+            saveDailySummary();
+        }
+    }
+
+     void displayDailySummary()
+    {
+        int totalCal = 0, totalPro = 0, totalCarb = 0, totalFat = 0;
+        cout << "\n====== Daily Nutrition Summary ======\n";
+        for (auto &x : dailyIntake)
+        {
+            cout << x.first << " -> Calories:" << x.second[0] << " Protein:" << x.second[1] << " Carbs:" << x.second[2] << " Fats:" << x.second[3] << "\n";
+            totalCal += x.second[0];
+            totalPro += x.second[1];
+            totalCarb += x.second[2];
+            totalFat += x.second[3];
+        }
+        cout << "------------------------------------\n";
+        cout << "TOTAL -> Calories:" << totalCal << " Protein:" << totalPro << " Carbs:" << totalCarb << " Fats:" << totalFat << "\n";
+    }
+
+        void saveDailySummary()
+    {
+        ofstream out(currentUser + "_summary.txt", ios::app);
+        out << "Daily Summary for " << currentUser << ":\n";
+        for (auto &x : dailyIntake)
+        {
+            out << x.first << "," << x.second[0] << "," << x.second[1] << "," << x.second[2] << "," << x.second[3] << "\n";
+        }
+        out << "-----------------------------\n";
+        out.close();
     }
 };
 
 int main()
 {
     Tracker system;
-    while (1)
+      while (1)
     {
-        cout << "\n=====================================================================================\n";
+        cout << "\n===========================================================================================\n";
         cout << "                          Simple Fitness/Calorie Tracker                          ";
-        cout << "\n=====================================================================================\n";
+        cout << "\n===========================================================================================\n";
         cout << "   1.ChartOfNeutrition | 2.CalculateNeutrition4YourFood | 3.LogIn | 4.CreateAccount | 5.Exit  ";
-        cout << "\n-------------------------------------------------------------------------------------\n";
+        cout << "\n-------------------------------------------------------------------------------------------\n";
 
         int a;
+        cout<<"Choose Option:";
         cin >> a;
+        cin.ignore();
 
-        string u, p;
         if (a == 1)
         {
+
         }
 
         else if (a == 4)
         {
             system.registerUser();
-            // cout << "Enter user name";
-            // cin >> u;
-            // cout << "Enter user password";
-            // cin >> p;
-            // system.registerUser(u, p);
         }
 
         else if (a == 3)
         {
-            // cout << "Enter username: ";
-            // cin >> u;
-            // cout << "Enter password: ";
-            // cin >> p;
+             while (1)
+    {
             if (system.loginUser() == true)
             {
-                cout << "\n=====================================================================================\n";
-                cout << u << " choose function you want to with";
-                cout << "\n-------------------------------------------------------------------------------------\n";
-
+                cout << "\n=============================================\n";
+                cout <<"     Welcome choose operation to perfrom     ";
+                cout << "\n---------------------------------------------\n";
+                cout<<" 1.EnterMeal 2.CalculateNeutrition 3.PrePlanDaily";
+                cout << "\n---------------------------------------------\n";
                 int x = 0;
+                cin>>x;
                 switch (x)
                 {
-                case 0:
-
+                case 1:
+                    system.enterMeal();
                     break;
 
                 default:
                     break;
                 }
             }
+        }
         }
         else if (a == 5)
         {
