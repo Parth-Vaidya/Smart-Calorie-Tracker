@@ -83,7 +83,7 @@ public:
             string firstWord;
             getline(iss, firstWord, ',');
             if (firstWord == un)
-            { // ✅ compare only username
+            { 
                 exists = true;
                 break;
             }
