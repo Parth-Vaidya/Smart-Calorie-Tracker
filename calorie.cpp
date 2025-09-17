@@ -101,7 +101,7 @@ public:
         out << "\n"
             << line;
         out.close();
-        cout << "User registerted";
+        cout << "User registered";
     }
 
     bool loginUser()
