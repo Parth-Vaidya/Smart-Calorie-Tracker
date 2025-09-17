@@ -5,7 +5,7 @@
 #include <iomanip>
 #include <sstream>
 #include <map>
-
+#include <cctype>
 using namespace std;
 
 class User
@@ -30,18 +30,23 @@ public:
     {
         return userpassword;
     }
+
+    // friend void showuser(const User &u);
 };
+
+// void showUser(const User &u){
+//     cout<<"Username: "<< u.username<<"Password : "<< u.userpassword;
+// }
 
 class Tracker
 {
 private:
     string currentUser;
-    map<string, vector<int>> foodDatabase; // food -> {cal, protein, carbs, fats}
-    map<string, vector<int>> dailyIntake;  // meal -> aggregated macros
+    map<string, vector<int>> foodDatabase;
+    map<string, vector<int>> dailyIntake;
 
 public:
-
- void loadFoodDatabase()
+    void loadFoodDatabase()
     {
         ifstream in("foodDB.txt");
         if (!in)
@@ -60,7 +65,7 @@ public:
         in.close();
     }
 
-        void saveFoodDatabase()
+    void saveFoodDatabase()
     {
         ofstream out("foodDB.txt");
         for (auto &x : foodDatabase)
@@ -71,14 +76,34 @@ public:
     }
     void registerUser()
     {
+        bool exists = false;
         string un, p;
         cout << "-----Register New User-----\n";
         cout << "Enter Username: ";
         getline(cin, un);
+        ifstream in("users.txt");
+        string line;
+        while (getline(in, line))
+        {
+            istringstream iss(line);
+            string firstWord;
+            getline(iss, firstWord, ',');
+            if (firstWord == un)
+            {
+                exists = true;
+                break;
+            }
+        }
+        in.close();
+        if (exists)
+        {
+            cout << "Username already exists! Please choose another.\n";
+            return;
+        }
 
         cout << "Enter Password:";
         getline(cin, p);
-        string line = un + ","+ p;
+        line = un + "," + p;
 
         ofstream out("users.txt", ios::app);
         if (!out)
@@ -86,7 +111,8 @@ public:
             cout << "File could not be opened\n";
             return;
         }
-        out << "\n"<< line;
+        out << "\n"
+            << line;
         out.close();
         cout << "User registerted";
     }
@@ -95,7 +121,7 @@ public:
     {
         string u, p;
         ifstream in("users.txt");
-        if (!in) 
+        if (!in)
         {
             cout << "Error: could not open users.txt\n";
             return false;
@@ -120,6 +146,7 @@ public:
                 if (s == p)
                 {
                     cout << "LogIn Successful\n";
+                    currentUser = f;
                     return true;
                 }
                 else
@@ -130,8 +157,8 @@ public:
             }
         }
         cout << "Username does not exist\n";
-        return false;
         in.close();
+        return false;
     }
 
     void enterMeal()
@@ -139,8 +166,8 @@ public:
         cout << "\nChoose Meal: 1.Breakfast 2.Lunch 3.Snacks 4.Dinner\n";
         int choice;
         cin >> choice;
-        
-        if (choice % 1 != 0) 
+
+        if (choice < 1 || choice > 4)
         {
             cout << "Invalid input. Exiting...\n";
             return;
@@ -173,28 +200,28 @@ public:
                 int cal, pro, carb, fat;
                 cout << "Calories: ";
                 cin >> cal;
-                if(cal % 1 != 0)
+                if (cin.fail())
                 {
                     cout << "Not an int!!" << endl;
                     return;
                 }
                 cout << "Protein: ";
                 cin >> pro;
-                if(pro % 1 != 0)
+                if (cin.fail())
                 {
                     cout << "Not an int!!" << endl;
                     return;
                 }
                 cout << "Carbs: ";
                 cin >> carb;
-                if(carb % 1 != 0)
+                if (cin.fail())
                 {
                     cout << "Not an int!!" << endl;
                     return;
                 }
                 cout << "Fats: ";
                 cin >> fat;
-                if(fat % 1 != 0)
+                if (cin.fail())
                 {
                     cout << "Not an int!!" << endl;
                     return;
@@ -215,6 +242,12 @@ public:
 
         cout << meal << " completed.\n";
 
+        if (meal == "Breakfast")
+            saveDailySummary();
+        if (meal == "Lunch")
+            saveDailySummary();
+        if (meal == "Snacks")
+            saveDailySummary();
         if (meal == "Dinner")
         {
             displayDailySummary();
@@ -222,7 +255,7 @@ public:
         }
     }
 
-     void displayDailySummary()
+    void displayDailySummary()
     {
         int totalCal = 0, totalPro = 0, totalCarb = 0, totalFat = 0;
         cout << "\n====== Daily Nutrition Summary ======\n";
@@ -238,7 +271,7 @@ public:
         cout << "TOTAL -> Calories:" << totalCal << " Protein:" << totalPro << " Carbs:" << totalCarb << " Fats:" << totalFat << "\n";
     }
 
-        void saveDailySummary()
+    void saveDailySummary()
     {
         ofstream out(currentUser + "_summary.txt", ios::app);
         out << "Daily Summary for " << currentUser << ":\n";
@@ -253,45 +286,45 @@ public:
 
 int main()
 {
-    Tracker system;
-      while (1)
+    Tracker *system =new Tracker();
+    while (true)
     {
         cout << "\n===========================================================================================\n";
         cout << "                          Simple Fitness/Calorie Tracker                          ";
         cout << "\n===========================================================================================\n";
-        cout << "   1.ChartOfNeutrition | 2.CalculateNeutrition4YourFood | 3.LogIn | 4.CreateAccount | 5.Exit  ";
+        cout << "   1.ChartOfNutrition | 2.CalculateNutrition4YourFood | 3.LogIn | 4.CreateAccount | 5.Exit  ";
         cout << "\n-------------------------------------------------------------------------------------------\n";
 
         int a;
-        cout<<"Choose Option:";
+        cout << "Choose Option:";
         cin >> a;
+        if (cin.fail())
+        {
+            cout << "Wrong input!!" << endl;
+            return 0;
+        }
         cin.ignore();
 
-        if (a == 1)
+        if (a == 4)
         {
-
-        }
-
-        else if (a == 4)
-        {
-            system.registerUser();
+            system->registerUser();
         }
 
         else if (a == 3)
         {
-            if (system.loginUser() == true)
+            if (system->loginUser() == true)
             {
                 cout << "\n=============================================\n";
-                cout <<"     Welcome choose operation to perfrom     ";
+                cout << "      Welcome choose operation to perfrom     ";
                 cout << "\n---------------------------------------------\n";
-                cout<<" 1.EnterMeal 2.CalculateNeutrition 3.PrePlanDaily";
+                cout << " 1.EnterMeal 2.CalculateNutrition 3.PrePlanDaily ";
                 cout << "\n---------------------------------------------\n";
                 int x = 0;
-                cin>>x;
+                cin >> x;
                 switch (x)
                 {
                 case 1:
-                    system.enterMeal();
+                    system->enterMeal();
                     break;
 
                 default:
@@ -301,7 +334,9 @@ int main()
         }
         else if (a == 5)
         {
+            delete system;
             return 0;
         }
     }
+    delete system;
 }

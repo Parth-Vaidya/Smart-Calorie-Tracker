@@ -1,0 +1,15 @@
+poha,250 5 45 6
+pizza,300 12 40 10
+dal tadka,180 9 25 5
+roti,120 3 20 2
+rice,200 4 45 1
+paneer butter masala,350 12 15 28
+chicken curry,280 25 8 15
+idli,70 2 12 0
+samosa,150 3 18 8
+dosa,168 4 30 4
+upma,220 6 40 7
+chole,270 13 35 9
+aloo paratha,290 7 38 12
+curd,100 6 7 4
+milk,120 8 11 5
