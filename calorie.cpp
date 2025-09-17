@@ -1,14 +1,4 @@
-//Chirag Wattamwar
-//202411029
-
-#include <iostream>
-#include <vector>
-#include <string>
-#include <fstream>
-#include <iomanip>
-#include <sstream>
-#include <map>
-
+#include <bits/stdc++.h>
 using namespace std;
 
 class User
@@ -39,8 +29,8 @@ class Tracker
 {
 private:
     string currentUser;
-    map<string, vector<int>> foodDatabase; // food -> {cal, protein, carbs, fats}
-    map<string, vector<int>> dailyIntake;  // meal -> aggregated macros
+    map<string, vector<int>> foodDatabase;
+    map<string, vector<int>> dailyIntake;
 
 public:
     void loadFoodDatabase()
@@ -71,17 +61,36 @@ public:
         }
         out.close();
     }
-
     void registerUser()
     {
+        bool exists = false;
         string un, p;
         cout << "-----Register New User-----\n";
         cout << "Enter Username: ";
         getline(cin, un);
+        ifstream in("users.txt");
+        string line;
+        while (getline(in, line))
+        {
+            istringstream iss(line);
+            string firstWord;
+            getline(iss, firstWord, ',');
+            if (firstWord == un)
+            { // ✅ compare only username
+                exists = true;
+                break;
+            }
+        }
+        in.close();
+        if (exists)
+        {
+            cout << "Username already exists! Please choose another.\n";
+            return;
+        }
 
         cout << "Enter Password:";
         getline(cin, p);
-        string line = un + "," + p;
+        line = un + "," + p;
 
         ofstream out("users.txt", ios::app);
         if (!out)
@@ -101,9 +110,10 @@ public:
         ifstream in("users.txt");
         if (!in)
         {
-            cout << "file could not open";
-            return 1;
+            cout << "Error: could not open users.txt\n";
+            return false;
         }
+
         cout << "-------User LogIn-------\n";
         cout << "Enter User name:";
         getline(cin, u);
@@ -123,8 +133,7 @@ public:
                 if (s == p)
                 {
                     cout << "LogIn Successful\n";
-                    currentUser = u;
-                    loadFoodDatabase();
+                    currentUser = f;
                     return true;
                 }
                 else
@@ -135,8 +144,8 @@ public:
             }
         }
         cout << "Username does not exist\n";
-        return false;
         in.close();
+        return false;
     }
 
     void enterMeal()
@@ -144,6 +153,12 @@ public:
         cout << "\nChoose Meal: 1.Breakfast 2.Lunch 3.Snacks 4.Dinner\n";
         int choice;
         cin >> choice;
+
+        if (choice < 1 || choice > 4)
+        {
+            cout << "Invalid input. Exiting...\n";
+            return;
+        }
         cin.ignore();
         string meal;
         if (choice == 1)
@@ -172,12 +187,32 @@ public:
                 int cal, pro, carb, fat;
                 cout << "Calories: ";
                 cin >> cal;
+                if (cin.fail())
+                {
+                    cout << "Not an int!!" << endl;
+                    return;
+                }
                 cout << "Protein: ";
                 cin >> pro;
+                if (cin.fail())
+                {
+                    cout << "Not an int!!" << endl;
+                    return;
+                }
                 cout << "Carbs: ";
                 cin >> carb;
+                if (cin.fail())
+                {
+                    cout << "Not an int!!" << endl;
+                    return;
+                }
                 cout << "Fats: ";
                 cin >> fat;
+                if (cin.fail())
+                {
+                    cout << "Not an int!!" << endl;
+                    return;
+                }
                 cin.ignore();
                 foodDatabase[food] = {cal, pro, carb, fat};
                 saveFoodDatabase();
@@ -194,6 +229,12 @@ public:
 
         cout << meal << " completed.\n";
 
+        if (meal == "Breakfast")
+            saveDailySummary();
+        if (meal == "Lunch")
+            saveDailySummary();
+        if (meal == "Snacks")
+            saveDailySummary();
         if (meal == "Dinner")
         {
             displayDailySummary();
@@ -233,31 +274,40 @@ public:
 int main()
 {
     Tracker system;
-    while (1)
+    while (true)
     {
         cout << "\n===========================================================================================\n";
         cout << "                          Simple Fitness/Calorie Tracker                          ";
         cout << "\n===========================================================================================\n";
-        cout << "                      1. LogIn | 2.Create Account | 3. Exit  ";
+        cout << "   1.ChartOfNutrition | 2.CalculateNutrition4YourFood | 3.LogIn | 4.CreateAccount | 5.Exit  ";
         cout << "\n-------------------------------------------------------------------------------------------\n";
 
         int a;
         cout << "Choose Option:";
         cin >> a;
+        if (cin.fail())
+        {
+            cout << "Wrong input!!" << endl;
+            return 0;
+        }
         cin.ignore();
 
-        if (a == 1)
+        if (a == 4)
+        {
+            system.registerUser();
+        }
+
+        else if (a == 3)
         {
             if (system.loginUser() == true)
             {
                 cout << "\n=============================================\n";
-                cout << "     Welcome choose operation to perform     ";
+                cout << "      Welcome choose operation to perfrom     ";
                 cout << "\n---------------------------------------------\n";
-                cout << " 1.EnterMeal 2.CalculateNeutrition 3.PrePlanDaily";
+                cout << " 1.EnterMeal 2.CalculateNutrition 3.PrePlanDaily ";
                 cout << "\n---------------------------------------------\n";
                 int x = 0;
                 cin >> x;
-                cin.ignore();
                 switch (x)
                 {
                 case 1:
@@ -269,12 +319,7 @@ int main()
                 }
             }
         }
-        else if (a == 2)
-        {
-            system.registerUser();
-        }
-
-        else if (a == 3)
+        else if (a == 5)
         {
             return 0;
         }
