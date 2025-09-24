@@ -1,6 +1,3 @@
-//Chirag Wattamwar
-//202411029
-
 #include <bits/stdc++.h>
 using namespace std;
 
