@@ -194,64 +194,68 @@ public:
             if (food == "done")
                 break;
 
-            if (foodDatabase.find(food) == foodDatabase.end())
+            else
             {
-                cout << "Food not found in database. Enter macros for " << food << ":\n";
-                int cal, pro, carb, fat;
-                cout << "Calories: ";
-                cin >> cal;
-                if (cin.fail())
+
+                if (foodDatabase.find(food) == foodDatabase.end())
                 {
-                    cout << "Not an int!!" << endl;
-                    return;
+                    cout << "Food not found in database. Enter macros for " << food << ":\n";
+                    int cal, pro, carb, fat;
+                    cout << "Calories: ";
+                    cin >> cal;
+                    if (cin.fail())
+                    {
+                        cout << "Not an int!!" << endl;
+                        return;
+                    }
+                    cout << "Protein: ";
+                    cin >> pro;
+                    if (cin.fail())
+                    {
+                        cout << "Not an int!!" << endl;
+                        return;
+                    }
+                    cout << "Carbs: ";
+                    cin >> carb;
+                    if (cin.fail())
+                    {
+                        cout << "Not an int!!" << endl;
+                        return;
+                    }
+                    cout << "Fats: ";
+                    cin >> fat;
+                    if (cin.fail())
+                    {
+                        cout << "Not an int!!" << endl;
+                        return;
+                    }
+                    cin.ignore();
+                    foodDatabase[food] = {cal, pro, carb, fat};
+                    saveFoodDatabase();
                 }
-                cout << "Protein: ";
-                cin >> pro;
-                if (cin.fail())
-                {
-                    cout << "Not an int!!" << endl;
-                    return;
-                }
-                cout << "Carbs: ";
-                cin >> carb;
-                if (cin.fail())
-                {
-                    cout << "Not an int!!" << endl;
-                    return;
-                }
-                cout << "Fats: ";
-                cin >> fat;
-                if (cin.fail())
-                {
-                    cout << "Not an int!!" << endl;
-                    return;
-                }
-                cin.ignore();
-                foodDatabase[food] = {cal, pro, carb, fat};
-                saveFoodDatabase();
+
+                vector<int> macros = foodDatabase[food];
+                if (dailyIntake.find(meal) == dailyIntake.end())
+                    dailyIntake[meal] = {0, 0, 0, 0};
+                for (int i = 0; i < 4; i++)
+                    dailyIntake[meal][i] += macros[i];
+
+                cout << food << " added successfully!\n";
             }
 
-            vector<int> macros = foodDatabase[food];
-            if (dailyIntake.find(meal) == dailyIntake.end())
-                dailyIntake[meal] = {0, 0, 0, 0};
-            for (int i = 0; i < 4; i++)
-                dailyIntake[meal][i] += macros[i];
+            cout << meal << " completed.\n";
 
-            cout << food << " added successfully!\n";
-        }
-
-        cout << meal << " completed.\n";
-
-        if (meal == "Breakfast")
-            saveDailySummary();
-        if (meal == "Lunch")
-            saveDailySummary();
-        if (meal == "Snacks")
-            saveDailySummary();
-        if (meal == "Dinner")
-        {
-            displayDailySummary();
-            saveDailySummary();
+            if (meal == "Breakfast")
+                saveDailySummary();
+            if (meal == "Lunch")
+                saveDailySummary();
+            if (meal == "Snacks")
+                saveDailySummary();
+            if (meal == "Dinner")
+            {
+                displayDailySummary();
+                saveDailySummary();
+            }
         }
     }
 
@@ -286,11 +290,11 @@ public:
 
 int main()
 {
-    Tracker *system =new Tracker();
+    Tracker *system = new Tracker();
     while (true)
     {
         cout << "\n===========================================================================================\n";
-        cout << "                          Simple Fitness/Calorie Tracker                          ";
+        cout << "                             Simple Fitness/Calorie Tracker                                   ";
         cout << "\n===========================================================================================\n";
         cout << "   1.ChartOfNutrition | 2.CalculateNutrition4YourFood | 3.LogIn | 4.CreateAccount | 5.Exit  ";
         cout << "\n-------------------------------------------------------------------------------------------\n";
@@ -305,29 +309,54 @@ int main()
         }
         cin.ignore();
 
-        if (a == 4)
+        if (a == 1)
+        {
+            break;
+        }
+        else if (a == 2)
+        {
+            break;
+        }
+        else if (a == 4)
         {
             system->registerUser();
+            break;
         }
 
         else if (a == 3)
         {
             if (system->loginUser() == true)
             {
-                cout << "\n=============================================\n";
-                cout << "      Welcome choose operation to perfrom     ";
-                cout << "\n---------------------------------------------\n";
-                cout << " 1.EnterMeal 2.CalculateNutrition 3.PrePlanDaily ";
-                cout << "\n---------------------------------------------\n";
+                cout << "\n======================================================\n";
+                cout << "|           Welcome choose operation to perfrom        |";
+                cout << "\n------------------------------------------------------\n";
+                cout << " 1.EnterMeal 2.CalculateNutrition 3.PrePlanDaily 4.Store";
+                cout << "\n-------------------------------------------------------\n";
                 int x = 0;
                 cin >> x;
+                cin.ignore();
                 switch (x)
                 {
                 case 1:
                     system->enterMeal();
                     break;
 
-                default:
+                case 2:
+                    break;
+
+                case 3:
+                    break;
+
+                case 4:
+                    cout << "\n======================================================\n";
+                    cout << " |                   NutriFit Store                     |";
+                    cout << "\n------------------------------------------------------\n";
+                    cout << " 1.Explore Plan  2.Schedule Counsellor Meeting 3.-------";
+                    cout << "\n-------------------------------------------------------\n";
+                    int x = 0;
+                    cin >> x;
+                    cin.ignore();
+                    // system->;
                     break;
                 }
             }
