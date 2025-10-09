@@ -23,7 +23,13 @@ public:
     {
         return userpassword;
     }
+
+    // friend void showuser(const User &u);
 };
+
+// void showUser(const User &u){
+//     cout<<"Username: "<< u.username<<"Password : "<< u.userpassword;
+// }
 
 class Tracker
 {
@@ -73,9 +79,9 @@ public:
         while (getline(in, line))
         {
             istringstream iss(line);
-            string firstWord;
-            getline(iss, firstWord, ',');
-            if (firstWord == un)
+            string temp;
+            getline(iss, temp, ',');
+            if (temp == un)
             {
                 exists = true;
                 break;
@@ -273,7 +279,7 @@ public:
 
 int main()
 {
-    Tracker system;
+    Tracker *system = new Tracker();
     while (true)
     {
         cout << "\n===========================================================================================\n";
@@ -294,12 +300,12 @@ int main()
 
         if (a == 4)
         {
-            system.registerUser();
+            system->registerUser();
         }
 
         else if (a == 3)
         {
-            if (system.loginUser() == true)
+            if (system->loginUser() == true)
             {
                 cout << "\n=============================================\n";
                 cout << "      Welcome choose operation to perfrom     ";
@@ -310,18 +316,20 @@ int main()
                 cin >> x;
                 switch (x)
                 {
-                case 1:
-                    system.enterMeal();
-                    break;
+                    case 1:
+                        system->enterMeal();
+                        break;
 
-                default:
-                    break;
+                    default:
+                        break;
                 }
             }
         }
         else if (a == 5)
         {
+            delete system;
             return 0;
         }
     }
+    delete system;
 }
