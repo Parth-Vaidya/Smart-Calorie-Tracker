@@ -30,16 +30,12 @@ class Course
     string counsellorName;
 
 public:
-    Course(string cat, int cal, int f, int p, int c, string desc, string cname)
-        : category(cat), targetCalories(cal), fats(f), protein(p), carbs(c),
-          description(desc), counsellorName(cname) {}
+    Course(string cat, int cal, int f, int p, int c, string desc, string cname) : category(cat), targetCalories(cal), fats(f), protein(p), carbs(c), description(desc), counsellorName(cname) {}
 
     void saveCourse()
     {
         ofstream out("courses.txt", ios::app);
-        out << category << "," << targetCalories << "," << fats << ","
-            << protein << "," << carbs << "," << description << ","
-            << counsellorName << "\n";
+        out << category << "," << targetCalories << "," << fats << "," << protein << "," << carbs << "," << description << "," << counsellorName << "\n";
         out.close();
     }
 
@@ -64,10 +60,7 @@ public:
             getline(iss, c, ',');
             getline(iss, desc, ',');
             getline(iss, cname);
-            cout << "Category: " << cat << "\nCalories: " << cal
-                 << "\nFats: " << f << " Protein: " << p << " Carbs: " << c
-                 << "\nDescription: " << desc << "\nCounsellor: " << cname
-                 << "\n----------------------\n";
+            cout << "Category: " << cat << "\nCalories: " << cal << "\nFats: " << f << " Protein: " << p << " Carbs: " << c << "\nDescription: " << desc << "\nCounsellor: " << cname << "\n----------------------\n";
         }
     }
 };
@@ -99,9 +92,7 @@ public:
         ofstream out("counsellors.txt");
         for (auto &c : counsellors)
         {
-            out << c.second.getCounsellorName() << ","
-                << c.second.getUsername() << ","
-                << c.second.getPassword() << "\n";
+            out << c.second.getCounsellorName() << "," << c.second.getUsername() << "," << c.second.getPassword() << "\n";
         }
     }
 
@@ -226,13 +217,11 @@ int main()
                     {
                         Course::viewCourses();
                     }
-                    else
-                        break;
+                    else break;
                 }
             }
         }
-        else
-            break;
+        else break;
     }
     return 0;
 }
