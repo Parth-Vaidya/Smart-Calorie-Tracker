@@ -4,11 +4,12 @@
 #include <fstream>
 #include <iomanip>
 #include <sstream>
+#include <algorithm>
 #include <map>
 #include <cctype>
-#include <limits> // Required for input buffer clearing
-#include <ctime>   // Required for getting the current time
-
+#include <limits>
+#include <ctime>
+// #include counsellor.cpp
 using namespace std;
 
 class User
@@ -35,7 +36,8 @@ public:
     }
 };
 
-struct CourseInfo {
+struct CourseInfo
+{
     string category;
     string counsellorName;
     string fullDetails;
@@ -115,7 +117,8 @@ public:
             cout << "File could not be opened\n";
             return;
         }
-        out << "\n" << line;
+        out << "\n"
+            << line;
         out.close();
         cout << "User registered";
     }
@@ -179,10 +182,14 @@ public:
         }
         cin.ignore();
         string meal;
-        if (choice == 1) meal = "Breakfast";
-        else if (choice == 2) meal = "Lunch";
-        else if (choice == 3) meal = "Snacks";
-        else if (choice == 4) meal = "Dinner";
+        if (choice == 1)
+            meal = "Breakfast";
+        else if (choice == 2)
+            meal = "Lunch";
+        else if (choice == 3)
+            meal = "Snacks";
+        else if (choice == 4)
+            meal = "Dinner";
 
         cout << "Start adding food items for " << meal << ". Type 'done' when finished.\n";
 
@@ -192,20 +199,41 @@ public:
             cout << "Food: ";
             getline(cin, food);
 
-            if (food == "done") break;
+            if (food == "done")
+                break;
 
             if (foodDatabase.find(food) == foodDatabase.end())
             {
                 cout << "Food not found in database. Enter macros for " << food << ":\n";
                 int cal, pro, carb, fat;
-                cout << "Calories: "; cin >> cal;
-                if (cin.fail()){ cout << "Not an int!!" << endl; return; }
-                cout << "Protein: "; cin >> pro;
-                if (cin.fail()){ cout << "Not an int!!" << endl; return; }
-                cout << "Carbs: "; cin >> carb;
-                if (cin.fail()){ cout << "Not an int!!" << endl; return; }
-                cout << "Fats: "; cin >> fat;
-                if (cin.fail()){ cout << "Not an int!!" << endl; return; }
+                cout << "Calories: ";
+                cin >> cal;
+                if (cin.fail())
+                {
+                    cout << "Not an int!!" << endl;
+                    return;
+                }
+                cout << "Protein: ";
+                cin >> pro;
+                if (cin.fail())
+                {
+                    cout << "Not an int!!" << endl;
+                    return;
+                }
+                cout << "Carbs: ";
+                cin >> carb;
+                if (cin.fail())
+                {
+                    cout << "Not an int!!" << endl;
+                    return;
+                }
+                cout << "Fats: ";
+                cin >> fat;
+                if (cin.fail())
+                {
+                    cout << "Not an int!!" << endl;
+                    return;
+                }
                 cin.ignore();
                 foodDatabase[food] = {cal, pro, carb, fat};
                 saveFoodDatabase();
@@ -221,22 +249,26 @@ public:
         }
         cout << meal << " entries completed.\n";
 
-        if (dailyIntake.count("Breakfast") && dailyIntake.count("Lunch") && dailyIntake.count("Snacks") && dailyIntake.count("Dinner")) {
-             displayDailySummary();
+        if (dailyIntake.count("Breakfast") && dailyIntake.count("Lunch") && dailyIntake.count("Snacks") && dailyIntake.count("Dinner"))
+        {
+            displayDailySummary();
         }
         saveDailySummary(); // Save after every meal entry
     }
-    
-    void viewAndSelectCourse() {
+
+    void viewAndSelectCourse()
+    {
         ifstream in("courses.txt");
-        if (!in) {
+        if (!in)
+        {
             cout << "\nSorry, no courses are available at the moment.\n";
             return;
         }
         vector<CourseInfo> courses;
         string line;
         cout << "\n--- Available Fitness Courses ---\n";
-        while (getline(in, line)) {
+        while (getline(in, line))
+        {
             istringstream iss(line);
             string cat, cal_str, f_str, p_str, c_str, desc, cname;
             getline(iss, cat, ',');
@@ -253,24 +285,29 @@ public:
             courses.push_back({cat, cname, courseDetails.str()});
         }
         in.close();
-        if (courses.empty()) {
+        if (courses.empty())
+        {
             cout << "No courses found in the file.\n";
             return;
         }
-        for (size_t i = 0; i < courses.size(); ++i) {
+        for (size_t i = 0; i < courses.size(); ++i)
+        {
             cout << i + 1 << ". " << courses[i].fullDetails << "\n---------------------------------\n";
         }
         cout << "Enter the number of the course you want to select (or 0 to cancel): ";
         int choice;
         cin >> choice;
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
-        if (choice > 0 && choice <= courses.size()) {
-            const CourseInfo& selectedCourse = courses[choice - 1];
+        if (choice > 0 && choice <= courses.size())
+        {
+            const CourseInfo &selectedCourse = courses[choice - 1];
             ofstream out("enrollments.txt", ios::app);
             out << selectedCourse.category << "," << selectedCourse.counsellorName << "," << currentUser << "\n";
             out.close();
             cout << "\n*** You have successfully enrolled in the '" << selectedCourse.category << "' course by " << selectedCourse.counsellorName << "! ***\n";
-        } else {
+        }
+        else
+        {
             cout << "\nInvalid selection or action cancelled.\n";
         }
     }
@@ -278,7 +315,7 @@ public:
     void displayDailySummary()
     {
         time_t now = time(0);
-        char* dt = ctime(&now);
+        char *dt = ctime(&now);
 
         int totalCal = 0, totalPro = 0, totalCarb = 0, totalFat = 0;
         cout << "\n====== Daily Nutrition Summary ======\n";
@@ -301,10 +338,10 @@ public:
     void saveDailySummary()
     {
         ofstream out(currentUser + "_summary.txt");
-        
+
         // Get the current time
         time_t now = time(0);
-        char* dt = ctime(&now);
+        char *dt = ctime(&now);
 
         // Convert to string and remove the newline character that ctime adds
         string timeStr = dt;
@@ -314,7 +351,7 @@ public:
         // Write the timestamp to the file
         out << "Last Updated: " << timeStr << "\n";
         out << "-----------------------------\n";
-        
+
         // Write the meal data
         for (map<string, vector<int>>::iterator it = dailyIntake.begin(); it != dailyIntake.end(); ++it)
         {
@@ -324,6 +361,144 @@ public:
     }
 };
 
+struct FoodItem {
+    string name;
+    int calories;
+    int protein;
+    int carbs;
+    int fats;
+};
+
+vector<FoodItem> foodData;
+
+void loadDatabase(const string &foodDB) {
+    if (!foodDB.empty()) return; 
+    ifstream file(foodDB);
+    if (!file) {
+        cerr << "Error: Cannot open " << foodDB << endl;
+        return;
+    }
+
+    string line;
+    while (getline(file, line)) {
+        if (line.empty()) continue;
+
+        stringstream ss(line);
+        string name, rest;
+        getline(ss, name, ','); // name before comma
+        getline(ss, rest);      // rest after comma
+
+        FoodItem item;
+        item.name = name;
+        stringstream values(rest);
+        values >> item.calories >> item.protein >> item.carbs >> item.fats;
+
+        foodData.push_back(item);
+    }
+    file.close();
+}
+void showNext10(const string &foodDB) {
+    static size_t currentIndex = 0;
+
+    if (foodDB.empty()) {
+        cout << "Database is empty.\n";
+        return;
+    }
+
+    size_t total = foodDB.size();
+    size_t start = currentIndex;
+    size_t end = min(currentIndex + 10, total);
+
+    cout << "\n-------------------------------------------------------------\n";
+    cout << left << setw(12) << "Name"
+         << setw(10) << "Calories"
+         << setw(10) << "Protein"
+         << setw(10) << "Carbs"
+         << setw(10) << "Fats" << endl;
+    cout << "-------------------------------------------------------------\n";
+
+    for (size_t i = start; i < end; ++i) {
+        cout << left << setw(12) << foodData[i].name
+             << setw(10) << foodData[i].calories
+             << setw(10) << foodData[i].protein
+             << setw(10) << foodData[i].carbs
+             << setw(10) << foodData[i].fats << endl;
+    }
+
+    cout << "-------------------------------------------------------------\n";
+    cout << "Showing " << (start + 1) << "-" << end << " of " << total << endl;
+
+    currentIndex = end;
+
+    if (currentIndex >= total) {
+        cout << " End of database reached. Resetting...\n";
+        currentIndex = 0;
+    } else {
+        cout << " Call function again to show next 10 entries.\n";
+    }
+}
+
+void searchFoodFromFile() {
+    ifstream file("foodDB.txt");
+    if (!file) {
+        cout << "Error: Could not open foodDB.txt\n";
+        return;
+    }
+
+    string query;
+    cout << "\nEnter food name to search: ";
+    cin.ignore();
+    getline(cin, query);
+
+
+    transform(query.begin(), query.end(), query.begin(), ::tolower);
+
+    string line;
+    bool found = false;
+
+    while (getline(file, line)) {
+        if (line.empty()) continue;
+
+        size_t commaPos = line.find(',');
+        if (commaPos == string::npos) continue;
+
+        string name = line.substr(0, commaPos);
+        string nutrients = line.substr(commaPos + 1);
+
+        string nameLower = name;
+        transform(nameLower.begin(), nameLower.end(), nameLower.begin(), ::tolower);
+
+        if (nameLower == query) {
+            FoodItem item;
+            item.name = name;
+
+            stringstream ss(nutrients);
+            ss >> item.calories >> item.protein >> item.carbs >> item.fats;
+
+            cout << "\n Found in database:\n";
+            cout << "-------------------------------------------------------------\n";
+            cout << left << setw(18) << "Name"
+                 << setw(10) << "Calories"
+                 << setw(10) << "Protein"
+                 << setw(10) << "Carbs"
+                 << setw(10) << "Fats" << endl;
+            cout << "-------------------------------------------------------------\n";
+            cout << left << setw(18) << item.name
+                 << setw(10) << item.calories
+                 << setw(10) << item.protein
+                 << setw(10) << item.carbs
+                 << setw(10) << item.fats << endl;
+            cout << "-------------------------------------------------------------\n";
+            found = true;
+            break;
+        }
+    }
+        if (!found) {
+        cout << "'" << query << "' not found in database.\n";
+    }
+
+    file.close();
+}
 int main()
 {
     Tracker *system = new Tracker();
@@ -352,22 +527,42 @@ int main()
         {
             system->registerUser();
         }
+        else if (a == 1)
+        {
+            string filename = "foodDB.txt";
+            char choice;
+
+            do
+            {
+                showNext10(filename);
+                cout << "\nShow next 10? (y/n): ";
+                cin >> choice;
+            } while (choice == 'y' || choice == 'Y');
+
+            cout << "\nThank you for visiting\n";
+        }
+        else if(a==2){
+            searchFoodFromFile();
+            break;
+        }
         else if (a == 3)
         {
             if (system->loginUser() == true)
             {
                 bool loggedIn = true;
-                while(loggedIn) {
-                    cout << "\n=============================================\n";
-                    cout << "           Welcome choose operation to perform   ";
-                    cout << "\n---------------------------------------------\n";
-                    cout << " 1.EnterMeal 2.Select Course 3.Logout ";
-                    cout << "\n---------------------------------------------\n";
+                while (loggedIn)
+                {
+                    cout << "\n================================================\n";
+                    cout << "                    NutriFit Store                ";
+                    cout << "\n------------------------------------------------\n";
+                    cout << " 1.EnterMeal 2.Select Course 3.PrePlanner 4.Logout  ";
+                    cout << "\n------------------------------------------------\n";
                     cout << "Choose Option: ";
-                    
+
                     int x;
                     cin >> x;
-                     if (cin.fail()) {
+                    if (cin.fail())
+                    {
                         cout << "Wrong input!! Please enter a number.\n";
                         cin.clear();
                         cin.ignore(numeric_limits<streamsize>::max(), '\n');
@@ -383,6 +578,9 @@ int main()
                         system->viewAndSelectCourse();
                         break;
                     case 3:
+                        // system->preplanner();
+                        break;
+                    case 4:
                         cout << "Logging out...\n";
                         loggedIn = false;
                         break;
@@ -398,8 +596,9 @@ int main()
             delete system;
             return 0;
         }
-        else {
-             cout << "This option is not yet implemented.\n";
+        else
+        {
+            cout << "This option is not yet implemented.\n";
         }
     }
     delete system;
