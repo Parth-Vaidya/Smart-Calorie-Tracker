@@ -17,7 +17,6 @@ public:
     {
         cout << "Counsellor Name: " << counsellorName << "\nUsername: " << username << "\n";
     }
-
     friend class CounsellorPortal;
 };
 

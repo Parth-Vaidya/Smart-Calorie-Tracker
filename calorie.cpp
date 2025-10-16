@@ -67,6 +67,7 @@ public:
         }
         out.close();
     }
+
     void registerUser()
     {
         bool exists = false;
@@ -98,59 +99,66 @@ public:
         getline(cin, p);
         line = un + "," + p;
 
-        ofstream out("users.txt", ios::app);
-        if (!out)
+        try
         {
-            cout << "File could not be opened\n";
+            ofstream out("users.txt", ios::app);
+            if (!out) throw runtime_error("File could not be opened");
+            out << "\n" << line;
+            out.close();
+            cout << "User registered";
+        }
+        catch (const exception &e)
+        {
+            cout << "Exception: " << e.what() << "\n";
             return;
         }
-        out << "\n"
-            << line;
-        out.close();
-        cout << "User registered";
     }
 
     bool loginUser()
     {
         string u, p;
-        ifstream in("users.txt");
-        if (!in)
+        try
         {
-            cout << "Error: could not open users.txt\n";
-            return false;
-        }
+            ifstream in("users.txt");
+            if (!in)
+                throw runtime_error("Error: could not open users.txt");
 
-        cout << "-------User LogIn-------\n";
-        cout << "Enter User name:";
-        getline(cin, u);
-        string line;
-        while (getline(in, line))
-        {
-            istringstream iss(line);
-            string f, s;
-            getline(iss, f, ',');
-            getline(iss, s, ',');
-
-            if (f == u)
+            cout << "-------User LogIn-------\n";
+            cout << "Enter User name:";
+            getline(cin, u);
+            string line;
+            while (getline(in, line))
             {
-                cout << "Enter Password:";
-                getline(cin, p);
+                istringstream iss(line);
+                string f, s;
+                getline(iss, f, ',');
+                getline(iss, s, ',');
 
-                if (s == p)
+                if (f == u)
                 {
-                    cout << "LogIn Successful\n";
-                    currentUser = f;
-                    return true;
-                }
-                else
-                {
-                    cout << "Passwords Does not match\n";
-                    return false;
+                    cout << "Enter Password:";
+                    getline(cin, p);
+                    if (s == p)
+                    {
+                        cout << "LogIn Successful\n";
+                        currentUser = f;
+                        return true;
+                    }
+                    else
+                    {
+                        cout << "Passwords Does not match\n";
+                        return false;
+                    }
                 }
             }
+            cout << "Username does not exist\n";
+            in.close();
         }
-        cout << "Username does not exist\n";
-        in.close();
+        catch (const exception &e)
+        {
+            cout << e.what() << "\n";
+            return false;
+        }
         return false;
     }
 
@@ -187,41 +195,33 @@ public:
             if (food == "done")
                 break;
 
-            if (foodDatabase.find(food) == foodDatabase.end())
+            try
             {
-                cout << "Food not found in database. Enter macros for " << food << ":\n";
-                int cal, pro, carb, fat;
-                cout << "Calories: ";
-                cin >> cal;
-                if (cin.fail())
+                if (foodDatabase.find(food) == foodDatabase.end())
                 {
-                    cout << "Not an int!!" << endl;
-                    return;
+                    cout << "Food not found in database. Enter macros for " << food << ":\n";
+                    int cal, pro, carb, fat;
+                    cout << "Calories: ";
+                    cin >> cal;
+                    if (cin.fail()) throw invalid_argument("Not an integer input!");
+                    cout << "Protein: ";
+                    cin >> pro;
+                    if (cin.fail()) throw invalid_argument("Not an integer input!");
+                    cout << "Carbs: ";
+                    cin >> carb;
+                    if (cin.fail()) throw invalid_argument("Not an integer input!");
+                    cout << "Fats: ";
+                    cin >> fat;
+                    if (cin.fail()) throw invalid_argument("Not an integer input!");
+                    cin.ignore();
+                    foodDatabase[food] = {cal, pro, carb, fat};
+                    saveFoodDatabase();
                 }
-                cout << "Protein: ";
-                cin >> pro;
-                if (cin.fail())
-                {
-                    cout << "Not an int!!" << endl;
-                    return;
-                }
-                cout << "Carbs: ";
-                cin >> carb;
-                if (cin.fail())
-                {
-                    cout << "Not an int!!" << endl;
-                    return;
-                }
-                cout << "Fats: ";
-                cin >> fat;
-                if (cin.fail())
-                {
-                    cout << "Not an int!!" << endl;
-                    return;
-                }
-                cin.ignore();
-                foodDatabase[food] = {cal, pro, carb, fat};
-                saveFoodDatabase();
+            }
+            catch (const exception &e)
+            {
+                cout << "Error: " << e.what() << endl;
+                return;
             }
 
             vector<int> macros = foodDatabase[food];
