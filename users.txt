@@ -1,10 +1,2 @@
-
-<<<<<<< HEAD
-parth,parth
-chi,chi
-2332,2332
-2332,2332
-yuvank, yuvi45xx
-=======
-test,test
->>>>>>> origin/AdityaMain
+hi,hi
+adi,adi

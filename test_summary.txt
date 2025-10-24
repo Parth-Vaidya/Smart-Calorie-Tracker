@@ -1,7 +1,0 @@
-Daily Summary for test:
-Last Updated: Thu Sep 25 00:32:37 2025
------------------------------
-Breakfast,250,5,45,6
-Dinner,250,5,45,6
-Lunch,250,5,45,6
-Snacks,250,5,45,6

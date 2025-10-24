@@ -1,2 +1,0 @@
-Weight Loss,3000,3000,3000,3000,this is a test course,test
-weight gain,3000,4,5,5,abc course,abc
