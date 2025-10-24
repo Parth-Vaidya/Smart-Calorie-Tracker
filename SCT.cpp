@@ -9,6 +9,8 @@
 #include <cctype>
 #include <limits>
 #include <ctime>
+#include <queue>
+
 // #include counsellor.cpp
 using namespace std;
 
@@ -332,6 +334,110 @@ public:
         }
         cout << "------------------------------------\n";
         cout << "TOTAL -> Calories:" << totalCal << " Protein:" << totalPro << " Carbs:" << totalCarb << " Fats:" << totalFat << "\n";
+
+        // Compare with planned data (if available)
+        compareWithPlan(totalCal, totalPro, totalCarb, totalFat);
+    }
+    struct NutritionPlan
+    {
+        int calories;
+        int protein;
+        int carbs;
+        int fats;
+    };
+
+    queue<NutritionPlan> nutritionQueue; // stores future daily plans
+
+    void prePlanNutrition()
+    {
+        int days;
+        cout << "\nEnter how many days you want to plan nutrition for: ";
+        cin >> days;
+
+        if (cin.fail() || days <= 0)
+        {
+            cout << "Invalid number of days.\n";
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            return;
+        }
+
+        for (int i = 1; i <= days; i++)
+        {
+            NutritionPlan plan;
+            cout << "\n--- Enter plan for Day " << i << " ---\n";
+            cout << "Calories: ";
+            cin >> plan.calories;
+            cout << "Protein: ";
+            cin >> plan.protein;
+            cout << "Carbs: ";
+            cin >> plan.carbs;
+            cout << "Fats: ";
+            cin >> plan.fats;
+
+            nutritionQueue.push(plan);
+        }
+
+        cout << "\nNutrition plans added successfully for " << days << " day(s)!\n";
+    }
+
+    void compareWithPlan(int totalCal, int totalPro, int totalCarb, int totalFat)
+    {
+        if (nutritionQueue.empty())
+        {
+            cout << "\nNo planned nutrition data available for comparison.\n";
+            return;
+        }
+
+        NutritionPlan todayPlan = nutritionQueue.front();
+
+        cout << "\n====== Comparison with Planned Nutrition ======\n";
+        cout << "Planned -> Calories: " << todayPlan.calories
+             << " | Protein: " << todayPlan.protein
+             << " | Carbs: " << todayPlan.carbs
+             << " | Fats: " << todayPlan.fats << "\n";
+
+        cout << "Actual  -> Calories: " << totalCal
+             << " | Protein: " << totalPro
+             << " | Carbs: " << totalCarb
+             << " | Fats: " << totalFat << "\n";
+
+        bool exceeded = false;
+        if (totalCal > todayPlan.calories)
+        {
+            cout << "Limit exceeded in Calories!\n";
+            exceeded = true;
+        }
+        if (totalPro > todayPlan.protein)
+        {
+            cout << " Limit exceeded in Protein!\n";
+            exceeded = true;
+        }
+        if (totalCarb > todayPlan.carbs)
+        {
+            cout << "Limit exceeded in Carbs!\n";
+            exceeded = true;
+        }
+        if (totalFat > todayPlan.fats)
+        {
+            cout << " Limit exceeded in Fats!\n";
+            exceeded = true;
+        }
+        if (!exceeded)
+            cout << "All nutrients are within planned limits!\n";
+
+        //       ofstream fout("nutrition_summary.txt", ios::app);
+        // if (fout.is_open())
+        // {
+        //     fout << "Day Summary:\n";
+        //     fout << "Planned: " << todayPlan.calories << " " << todayPlan.protein << " " << todayPlan.carbs << " " << todayPlan.fats << "\n";
+        //     fout << "Actual: " << totalCal << " " << totalPro << " " << totalCarb << " " << totalFat << "\n";
+        //     fout << (exceeded ? "Status: Exceeded\n" : "Status: Within limit\n");
+        //     fout << "--------------------------------------\n";
+        //     fout.close();
+        // }
+
+        nutritionQueue.pop(); // remove plan for the completed day
     }
 
     // ** MODIFIED to store the current date and time in the file **
@@ -361,7 +467,8 @@ public:
     }
 };
 
-struct FoodItem {
+struct FoodItem
+{
     string name;
     int calories;
     int protein;
@@ -371,17 +478,22 @@ struct FoodItem {
 
 vector<FoodItem> foodData;
 
-void loadDatabase(const string &foodDB) {
-    if (!foodDB.empty()) return; 
+void loadDatabase(const string &foodDB)
+{
+    if (!foodDB.empty())
+        return;
     ifstream file(foodDB);
-    if (!file) {
+    if (!file)
+    {
         cerr << "Error: Cannot open " << foodDB << endl;
         return;
     }
 
     string line;
-    while (getline(file, line)) {
-        if (line.empty()) continue;
+    while (getline(file, line))
+    {
+        if (line.empty())
+            continue;
 
         stringstream ss(line);
         string name, rest;
@@ -397,10 +509,12 @@ void loadDatabase(const string &foodDB) {
     }
     file.close();
 }
-void showNext10(const string &foodDB) {
+void showNext10(const string &foodDB)
+{
     static size_t currentIndex = 0;
 
-    if (foodDB.empty()) {
+    if (foodDB.empty())
+    {
         cout << "Database is empty.\n";
         return;
     }
@@ -417,7 +531,8 @@ void showNext10(const string &foodDB) {
          << setw(10) << "Fats" << endl;
     cout << "-------------------------------------------------------------\n";
 
-    for (size_t i = start; i < end; ++i) {
+    for (size_t i = start; i < end; ++i)
+    {
         cout << left << setw(12) << foodData[i].name
              << setw(10) << foodData[i].calories
              << setw(10) << foodData[i].protein
@@ -430,45 +545,56 @@ void showNext10(const string &foodDB) {
 
     currentIndex = end;
 
-    if (currentIndex >= total) {
+    if (currentIndex >= total)
+    {
         cout << " End of database reached. Resetting...\n";
         currentIndex = 0;
-    } else {
+    }
+    else
+    {
         cout << " Call function again to show next 10 entries.\n";
     }
 }
 
-void searchFoodFromFile() {
+void searchFoodFromFile()
+{
     ifstream file("foodDB.txt");
-    if (!file) {
+    if (!file)
+    {
         cout << "Error: Could not open foodDB.txt\n";
         return;
     }
 
     string query;
     cout << "\nEnter food name to search: ";
-    cin.ignore();
+    // cin.ignore();
     getline(cin, query);
 
-
+    // Convert search term to lowercase for case-insensitive matching
     transform(query.begin(), query.end(), query.begin(), ::tolower);
 
     string line;
     bool found = false;
 
-    while (getline(file, line)) {
-        if (line.empty()) continue;
+    while (getline(file, line))
+    {
+        if (line.empty())
+            continue;
 
+        // Split line into name and nutrient part
         size_t commaPos = line.find(',');
-        if (commaPos == string::npos) continue;
+        if (commaPos == string::npos)
+            continue;
 
         string name = line.substr(0, commaPos);
         string nutrients = line.substr(commaPos + 1);
 
+        // Convert to lowercase for case-insensitive comparison
         string nameLower = name;
         transform(nameLower.begin(), nameLower.end(), nameLower.begin(), ::tolower);
 
-        if (nameLower == query) {
+        if (nameLower == query)
+        {
             FoodItem item;
             item.name = name;
 
@@ -493,7 +619,9 @@ void searchFoodFromFile() {
             break;
         }
     }
-        if (!found) {
+
+    if (!found)
+    {
         cout << "'" << query << "' not found in database.\n";
     }
 
@@ -541,7 +669,8 @@ int main()
 
             cout << "\nThank you for visiting\n";
         }
-        else if(a==2){
+        else if (a == 2)
+        {
             searchFoodFromFile();
             break;
         }
@@ -553,7 +682,7 @@ int main()
                 while (loggedIn)
                 {
                     cout << "\n================================================\n";
-                    cout << "                    NutriFit Store                ";
+                    cout << "                   Nutri-Fit Store                ";
                     cout << "\n------------------------------------------------\n";
                     cout << " 1.EnterMeal 2.Select Course 3.PrePlanner 4.Logout  ";
                     cout << "\n------------------------------------------------\n";
@@ -578,7 +707,7 @@ int main()
                         system->viewAndSelectCourse();
                         break;
                     case 3:
-                        // system->preplanner();
+                        system->prePlanNutrition();
                         break;
                     case 4:
                         cout << "Logging out...\n";
