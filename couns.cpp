@@ -17,15 +17,12 @@ using namespace std;
 class User
 {
 private:
+    string currentUser;
     string username;
     string userpassword;
 
 public:
-    User(string u, string p)
-    {
-        username = u;
-        userpassword = p;
-    }
+    User(){}
 
     string getUsername() const
     {
@@ -35,51 +32,6 @@ public:
     string checkpassword() const
     {
         return userpassword;
-    }
-};
-
-struct CourseInfo
-{
-    string category;
-    string counsellorName;
-    string fullDetails;
-};
-
-class Tracker
-{
-private:
-    string currentUser;
-    map<string, vector<int>> foodDatabase;
-    map<string, vector<int>> dailyIntake;
-
-public:
-    void loadFoodDatabase()
-    {
-        ifstream in("foodDB.txt");
-        if (!in)
-            return;
-
-        string line;
-        while (getline(in, line))
-        {
-            istringstream iss(line);
-            string food;
-            int cal, pro, carb, fat;
-            getline(iss, food, ',');
-            iss >> cal >> pro >> carb >> fat;
-            foodDatabase[food] = {cal, pro, carb, fat};
-        }
-        in.close();
-    }
-
-    void saveFoodDatabase()
-    {
-        ofstream out("foodDB.txt");
-        for (map<string, vector<int>>::const_iterator it = foodDatabase.begin(); it != foodDatabase.end(); ++it)
-        {
-            out << it->first << "," << it->second[0] << " " << it->second[1] << " " << it->second[2] << " " << it->second[3] << "\n";
-        }
-        out.close();
     }
 
     void registerUser()
@@ -167,6 +119,52 @@ public:
         cout << "Username does not exist\n";
         in.close();
         return false;
+    }
+
+};
+
+struct CourseInfo
+{
+    string category;
+    string counsellorName;
+    string fullDetails;
+};
+
+class Tracker
+{
+private:
+    string currentUser;
+    map<string, vector<int>> foodDatabase;
+    map<string, vector<int>> dailyIntake;
+
+public:
+    void loadFoodDatabase()
+    {
+        ifstream in("foodDB.txt");
+        if (!in)
+            return;
+
+        string line;
+        while (getline(in, line))
+        {
+            istringstream iss(line);
+            string food;
+            int cal, pro, carb, fat;
+            getline(iss, food, ',');
+            iss >> cal >> pro >> carb >> fat;
+            foodDatabase[food] = {cal, pro, carb, fat};
+        }
+        in.close();
+    }
+
+    void saveFoodDatabase()
+    {
+        ofstream out("foodDB.txt");
+        for (map<string, vector<int>>::const_iterator it = foodDatabase.begin(); it != foodDatabase.end(); ++it)
+        {
+            out << it->first << "," << it->second[0] << " " << it->second[1] << " " << it->second[2] << " " << it->second[3] << "\n";
+        }
+        out.close();
     }
 
     void enterMeal()
@@ -629,6 +627,7 @@ void searchFoodFromFile()
 }
 int main()
 {
+    User *user = new User();
     Tracker *system = new Tracker();
     system->loadFoodDatabase();
 
@@ -653,7 +652,7 @@ int main()
 
         if (a == 4)
         {
-            system->registerUser();
+            user->registerUser();
         }
         else if (a == 1)
         {
@@ -677,7 +676,7 @@ int main()
         }
         else if (a == 3)
         {
-            if (system->loginUser() == true)
+            if (user->loginUser() == true)
             {
                 bool loggedIn = true;
                 while (loggedIn)
