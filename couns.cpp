@@ -138,6 +138,8 @@ private:
     map<string, vector<int>> dailyIntake;
 
 public:
+    friend void searchFoodFromFile(Tracker &t);
+
     void loadFoodDatabase()
     {
         ifstream in("foodDB.txt");
@@ -553,7 +555,7 @@ void showNext10()
         cout << "Call function again to show next 10 entries.\n";
     }
 }
-void searchFoodFromFile()
+void searchFoodFromFile(Tracker &t)
 {
     ifstream file("foodDB.txt");
     if (!file)
@@ -564,10 +566,8 @@ void searchFoodFromFile()
 
     string query;
     cout << "\nEnter food name to search: ";
-    // cin.ignore();
     getline(cin, query);
 
-    // Convert search term to lowercase for case-insensitive matching
     transform(query.begin(), query.end(), query.begin(), ::tolower);
 
     string line;
@@ -578,7 +578,6 @@ void searchFoodFromFile()
         if (line.empty())
             continue;
 
-        // Split line into name and nutrient part
         size_t commaPos = line.find(',');
         if (commaPos == string::npos)
             continue;
@@ -586,7 +585,6 @@ void searchFoodFromFile()
         string name = line.substr(0, commaPos);
         string nutrients = line.substr(commaPos + 1);
 
-        // Convert to lowercase for case-insensitive comparison
         string nameLower = name;
         transform(nameLower.begin(), nameLower.end(), nameLower.begin(), ::tolower);
 
@@ -623,8 +621,8 @@ void searchFoodFromFile()
     }
 
     file.close();
-    return;
 }
+
 int main()
 {
     User *user = new User();
@@ -671,7 +669,7 @@ int main()
         }
         else if (a == 2)
         {
-            searchFoodFromFile();
+            searchFoodFromFile(*system);
             break;
         }
         else if (a == 3)
