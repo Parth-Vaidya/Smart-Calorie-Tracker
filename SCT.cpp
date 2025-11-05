@@ -8,71 +8,45 @@
 #include <cctype>
 using namespace std;
 
-class User
-{
-private:
+class Account {
+protected: // Accessible by derived classes like User and Counsellor
     string username;
-    string userpassword;
+    string password;
 
 public:
-    User(string u, string p)
-    {
-        username = u;
-        userpassword = p;
-    }
+    Account(string u, string p) : username(u), password(p) {}
 
-    string getUsername() const
-    {
+    string getUsername() const {
         return username;
     }
 
-    string checkpassword() const
-    {
-        return userpassword;
+    string checkPassword() const {
+        return password;
     }
 
-    // friend void showuser(const User &u);
+    // A pure virtual function. This makes Account an "abstract class".
+    // Any class that inherits from Account MUST provide its own version of this function.
+    virtual void displayDashboard() const = 0;
+
+    // NEW: Virtual destructor is good practice for base classes.
+    virtual ~Account() {}
 };
 
-// void showUser(const User &u){
-//     cout<<"Username: "<< u.username<<"Password : "<< u.userpassword;
-// }
-
-class Tracker
-{
+class User : public Account {
 private:
     string currentUser;
-    map<string, vector<int>> foodDatabase;
-    map<string, vector<int>> dailyIntake;
-
 public:
-    void loadFoodDatabase()
-    {
-        ifstream in("foodDB.txt");
-        if (!in)
-            return;
+    // The constructor now calls the base class constructor
+    User(string u, string p) : Account(u, p) {}
+    User() : Account("", "") {}
+    string getCurrentUser() const { return currentUser; }
 
-        string line;
-        while (getline(in, line))
-        {
-            istringstream iss(line);
-            string food;
-            int cal, pro, carb, fat;
-            getline(iss, food, ',');
-            iss >> cal >> pro >> carb >> fat;
-            foodDatabase[food] = {cal, pro, carb, fat};
-        }
-        in.close();
-    }
 
-    void saveFoodDatabase()
-    {
-        ofstream out("foodDB.txt");
-        for (auto &x : foodDatabase)
-        {
-            out << x.first << "," << x.second[0] << " " << x.second[1] << " " << x.second[2] << " " << x.second[3] << "\n";
-        }
-        out.close();
+    // MODIFIED: Providing the required implementation for the virtual function.
+    // The 'override' keyword is good practice to ensure we are correctly overriding a base class function.
+    void displayDashboard() const override {
+        cout << "\n--- Welcome to the User Dashboard, " << getUsername() << "! ---\n";
+        cout << "Here you can track meals and enroll in courses.\n";
     }
     void registerUser()
     {
@@ -111,10 +85,9 @@ public:
             cout << "File could not be opened\n";
             return;
         }
-        out << "\n"
-            << line;
+        out << line << "\n";
         out.close();
-        cout << "User registerted";
+        cout << "User registered";
     }
 
     bool loginUser()
@@ -159,6 +132,47 @@ public:
         cout << "Username does not exist\n";
         in.close();
         return false;
+    }
+};
+class Tracker
+{
+private:
+    string currentUser;
+    map<string, vector<int>> foodDatabase;
+    map<string, vector<int>> dailyIntake;
+
+public:
+    void setCurrentUser(const string& user) {
+        currentUser = user;
+    }
+
+    void loadFoodDatabase()
+    {
+        ifstream in("foodDB.txt");
+        if (!in)
+            return;
+
+        string line;
+        while (getline(in, line))
+        {
+            istringstream iss(line);
+            string food;
+            int cal, pro, carb, fat;
+            getline(iss, food, ',');
+            iss >> cal >> pro >> carb >> fat;
+            foodDatabase[food] = {cal, pro, carb, fat};
+        }
+        in.close();
+    }
+
+    void saveFoodDatabase()
+    {
+        ofstream out("foodDB.txt");
+        for (auto &x : foodDatabase)
+        {
+            out << x.first << "," << x.second[0] << " " << x.second[1] << " " << x.second[2] << " " << x.second[3] << "\n";
+        }
+        out.close();
     }
 
     void enterMeal()
@@ -286,7 +300,7 @@ public:
 
 int main()
 {
-    Tracker *system =new Tracker();
+    User user;
     while (true)
     {
         cout << "\n===========================================================================================\n";
@@ -298,45 +312,34 @@ int main()
         int a;
         cout << "Choose Option:";
         cin >> a;
-        if (cin.fail())
-        {
+        if (cin.fail()) {
             cout << "Wrong input!!" << endl;
             return 0;
         }
         cin.ignore();
 
-        if (a == 4)
-        {
-            system->registerUser();
+        if (a == 4) {
+            user.registerUser();
         }
-
-        else if (a == 3)
-        {
-            if (system->loginUser() == true)
-            {
+        else if (a == 3) {
+            if (user.loginUser()) {
+                Tracker system;
+                system.loadFoodDatabase();
+                system.setCurrentUser(user.getCurrentUser());
                 cout << "\n=============================================\n";
-                cout << "      Welcome choose operation to perfrom     ";
+                cout << "      Welcome choose operation to perform     ";
                 cout << "\n---------------------------------------------\n";
                 cout << " 1.EnterMeal 2.CalculateNutrition 3.PrePlanDaily ";
                 cout << "\n---------------------------------------------\n";
-                int x = 0;
+                int x;
                 cin >> x;
-                switch (x)
-                {
-                case 1:
-                    system->enterMeal();
-                    break;
+                cin.ignore();
 
-                default:
-                    break;
-                }
+                if (x == 1)
+                    system.enterMeal();
             }
         }
         else if (a == 5)
-        {
-            delete system;
             return 0;
-        }
     }
-    delete system;
 }
