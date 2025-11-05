@@ -6,15 +6,15 @@
 #include <sstream>
 #include <map>
 #include <cctype>
-// --- NEW: Added for counsellor features ---
 #include <set> 
 #include <limits> 
 #include <ctime>
 
 using namespace std;
 
+// Base class for all account types
 class Account {
-protected: // Accessible by derived classes like User and Counsellor
+protected: 
     string username;
     string password;
 
@@ -29,11 +29,9 @@ public:
         return password;
     }
 
-    // A pure virtual function. This makes Account an "abstract class".
-    // Any class that inherits from Account MUST provide its own version of this function.
+    // Pure virtual function makes this an abstract class
     virtual void displayDashboard() const = 0;
 
-    // NEW: Virtual destructor is good practice for base classes.
     virtual ~Account() {}
 };
 
@@ -41,14 +39,11 @@ class User : public Account {
 private:
     string currentUser;
 public:
-    // The constructor now calls the base class constructor
     User(string u, string p) : Account(u, p) {}
     User() : Account("", "") {}
     string getCurrentUser() const { return currentUser; }
 
 
-    // MODIFIED: Providing the required implementation for the virtual function.
-    // The 'override' keyword is good practice to ensure we are correctly overriding a base class function.
     void displayDashboard() const override {
         cout << "\n--- Welcome to the User Dashboard, " << getUsername() << "! ---\n";
         cout << "Here you can track meals and enroll in courses.\n";
@@ -139,6 +134,7 @@ public:
         return false;
     }
 };
+
 class Tracker
 {
 private:
@@ -311,22 +307,19 @@ public:
     }
 };
 
-// --- NEW: Counsellor class from your second file ---
-// Inherits from Account.
+// Counsellor class, inherits from Account
 class Counsellor : public Account {
 public:
     string counsellorName;
 
-    // Constructor calls the base Account constructor
     Counsellor(string cname, string uname, string p) : Account(uname, p), counsellorName(cname) {}
 
-    // Provides the implementation for the pure virtual function
     void displayDashboard() const override {
         cout << "\n--- Welcome to the Counsellor Dashboard, " << counsellorName << "! ---\n";
         cout << "Here you can create courses and view user progress.\n";
     }
 
-    // --- NEW: Standalone function to register a new counsellor ---
+    // Static function to register a new counsellor
     static void registerCounsellor() {
         string cname, uname, pass;
         cout << "-----Register New Counsellor-----\n";
@@ -365,9 +358,8 @@ public:
         cout << "Counsellor registered successfully.\n";
     }
 
-    // --- NEW: Standalone function to log in a counsellor ---
-    // Returns a pointer to a Counsellor object if successful, otherwise nullptr
-    static Account* loginCounsellor() {
+    // Static function to log in a counsellor
+    static Counsellor* loginCounsellor() {
         string uname, pass;
         cout << "-------Counsellor LogIn-------\n";
         cout << "Enter Username: "; 
@@ -391,7 +383,6 @@ public:
             
             if (fileUname == uname && filePass == pass) {
                 cout << "LogIn Successful\n";
-                // Return a new Counsellor object, upcast to an Account pointer
                 return new Counsellor(fileCname, fileUname, filePass);
             }
         }
@@ -401,12 +392,9 @@ public:
     }
 };
 
-// --- NEW: Class for Counsellor Features ---
-// This class holds the logic for what a counsellor can DO,
-// separate from their login/account info.
+// Holds the logic for counsellor features
 class CounsellorFeatures {
 public:
-    // This function is taken from your Course::saveCourse static method
     void createCourse(const string& counsellorName) {
         string cat, desc;
         cout << "Enter Course Category (e.g., Weight Loss): "; 
@@ -420,7 +408,6 @@ public:
         cout << "Course created successfully.\n";
     }
 
-    // --- NEW: Function to view courses created by this counsellor ---
     void viewMyCourses(const string& counsellorName) {
         cout << "\n--- Courses Created By " << counsellorName << " ---\n";
         ifstream in("courses.txt");
@@ -453,11 +440,10 @@ public:
         }
     }
 
-    // --- MODIFIED: This function now shows course details ---
-    // This function is taken from your CounsellorPortal::viewEnrolledUsers method
+    // Shows which users are in which courses
     void viewEnrolledUsers(const string& counsellorName) {
         
-        // --- NEW: Load this counsellor's course descriptions first ---
+        // Load this counsellor's course descriptions
         map<string, string> courseDetailsMap;
         ifstream coursesFile("courses.txt");
         if (coursesFile) {
@@ -504,7 +490,6 @@ public:
         }
         cout << "\n--- Users Enrolled in Your Courses ---\n";
         for (const auto& pair : enrolledUsersByCourse) {
-            // --- MODIFIED: Print with description ---
             string courseCategory = pair.first;
             string courseDesc = courseDetailsMap.count(courseCategory) ? courseDetailsMap[courseCategory] : "N/A";
 
@@ -543,91 +528,14 @@ public:
     }
 };
 
-// --- NEW: Standalone function to register a new counsellor ---
-/*
-void registerCounsellor() {
-    string cname, uname, pass;
-    cout << "-----Register New Counsellor-----\n";
-    cout << "Enter Your Full Name: "; 
-    getline(cin, cname);
-    cout << "Enter Username: "; 
-    getline(cin, uname);
 
-    // Check if username exists
-    ifstream in("counsellors.txt");
-    string line;
-    bool exists = false;
-    while (getline(in, line)) {
-        istringstream iss(line);
-        string fileCname, fileUname;
-        getline(iss, fileCname, ',');
-        getline(iss, fileUname, ',');
-        if (fileUname == uname) {
-            exists = true;
-            break;
-        }
-    }
-    in.close();
-
-    if (exists) {
-        cout << "Username already exists. Please try another.\n";
-        return;
-    }
-
-    cout << "Enter Password: "; 
-    getline(cin, pass);
-
-    ofstream out("counsellors.txt", ios::app);
-    out << cname << "," << uname << "," << pass << "\n";
-    out.close();
-    cout << "Counsellor registered successfully.\n";
-}
-*/
-
-// --- NEW: Standalone function to log in a counsellor ---
-// Returns a pointer to a Counsellor object if successful, otherwise nullptr
-/*
-Account* loginCounsellor() {
-    string uname, pass;
-    cout << "-------Counsellor LogIn-------\n";
-    cout << "Enter Username: "; 
-    getline(cin, uname);
-    cout << "Enter Password: "; 
-    getline(cin, pass);
-    
-    ifstream in("counsellors.txt");
-    if (!in) {
-        cout << "Error: could not open counsellors.txt\n";
-        return nullptr;
-    }
-
-    string line;
-    while (getline(in, line)) {
-        istringstream iss(line);
-        string fileCname, fileUname, filePass;
-        getline(iss, fileCname, ',');
-        getline(iss, fileUname, ',');
-        getline(iss, filePass, ',');
-        
-        if (fileUname == uname && filePass == pass) {
-            cout << "LogIn Successful\n";
-            // Return a new Counsellor object, upcast to an Account pointer
-            return new Counsellor(fileCname, fileUname, filePass);
-        }
-    }
-    cout << "Username or Password does not match.\n";
-    in.close();
-    return nullptr;
-}
-*/
 
 
 int main()
 {
-    User user; // Keep this for the user portal logic
+    User user; // For user portal logic
     
-    // --- NEW: Polymorphic pointer. Can hold a User OR a Counsellor ---
-    Account* loggedInAccount = nullptr;
+    Counsellor* loggedInCounsellor = nullptr;
     
     while (true)
     {
@@ -649,7 +557,7 @@ int main()
         cin.ignore();
 
         if (a == 4) {
-            // --- NEW: Ask for account type ---
+            // Ask for account type
             cout << "Register as: 1.User 2.Counsellor\n";
             int regChoice;
             cin >> regChoice;
@@ -663,14 +571,14 @@ int main()
             }
         }
         else if (a == 3) {
-            // --- NEW: Ask for account type ---
+            // Ask for account type
             cout << "Login as: 1.User 2.Counsellor\n";
             int loginChoice;
             cin >> loginChoice;
             cin.ignore();
 
             if (loginChoice == 1) {
-                // --- User Login Logic (Original) ---
+                // User Login Logic
                 if (user.loginUser()) {
                     Tracker system;
                     system.loadFoodDatabase();
@@ -689,26 +597,22 @@ int main()
                     // ... (add other user menu options here)
                 }
             } else if (loginChoice == 2) {
-                // --- Counsellor Login Logic (NEW) ---
-                loggedInAccount = Counsellor::loginCounsellor();
+                // Counsellor Login Logic
                 
-                if (loggedInAccount != nullptr) {
-                    // We need to cast the Account pointer back to a Counsellor pointer
-                    // to access counsellor-specific things like 'counsellorName'.
-                    // We use dynamic_cast for safety.
-                    Counsellor* loggedInCounsellor = dynamic_cast<Counsellor*>(loggedInAccount);
+                loggedInCounsellor = Counsellor::loginCounsellor();
+                
+                if (loggedInCounsellor != nullptr) {
+                    
+                    loggedInCounsellor->displayDashboard();
+                    CounsellorFeatures features; 
+                    bool counsellorLoggedIn = true;
 
-                    if (loggedInCounsellor) {
-                        loggedInAccount->displayDashboard(); // Show virtual dashboard
-                        CounsellorFeatures features; // Create features object
-                        bool counsellorLoggedIn = true;
-
-                        while (counsellorLoggedIn) {
+                    while (counsellorLoggedIn) {
                             cout << "\n--- Counsellor Menu ---\n";
                             cout << "1. Create Course\n";
-                            cout << "2. View My Courses\n"; // --- NEW ---
-                            cout << "3. View Enrolled Users\n"; // --- WAS 2 ---
-                            cout << "4. Logout\n"; // --- WAS 3 ---
+                            cout << "2. View My Courses\n";
+                            cout << "3. View Enrolled Users\n";
+                            cout << "4. Logout\n";
                             cout << "Choose: ";
                             int cChoice;
                             cin >> cChoice;
@@ -718,15 +622,12 @@ int main()
                                 case 1:
                                     features.createCourse(loggedInCounsellor->counsellorName);
                                     break;
-                                // --- NEW ---
                                 case 2:
                                     features.viewMyCourses(loggedInCounsellor->counsellorName);
                                     break;
-                                // --- WAS 2 ---
                                 case 3:
                                     features.viewEnrolledUsers(loggedInCounsellor->counsellorName);
                                     break;
-                                // --- WAS 3 ---
                                 case 4:
                                     counsellorLoggedIn = false;
                                     break;
@@ -734,9 +635,9 @@ int main()
                                     cout << "Invalid choice.\n";
                             }
                         }
-                    }
-                    delete loggedInAccount; // Clean up the object we created
-                    loggedInAccount = nullptr;
+                    
+                    delete loggedInCounsellor; // Clean up the object
+                    loggedInCounsellor = nullptr;
                 }
             } else {
                 cout << "Invalid choice.\n";
