@@ -4,16 +4,13 @@
 #include <fstream>
 #include <iomanip>
 #include <sstream>
+#include <algorithm>
 #include <map>
-<<<<<<< Updated upstream
-
-=======
 #include <cctype>
 #include <limits>
 #include <ctime>
 #include <queue>
 // #include counsellor.cpp
->>>>>>> Stashed changes
 using namespace std;
 
 class User
@@ -40,16 +37,22 @@ public:
     }
 };
 
+struct CourseInfo
+{
+    string category;
+    string counsellorName;
+    string fullDetails;
+};
+
 class Tracker
 {
 private:
     string currentUser;
-    map<string, vector<int>> foodDatabase; // food -> {cal, protein, carbs, fats}
-    map<string, vector<int>> dailyIntake;  // meal -> aggregated macros
+    map<string, vector<int>> foodDatabase;
+    map<string, vector<int>> dailyIntake;
 
 public:
-
- void loadFoodDatabase()
+    void loadFoodDatabase()
     {
         ifstream in("foodDB.txt");
         if (!in)
@@ -68,25 +71,46 @@ public:
         in.close();
     }
 
-        void saveFoodDatabase()
+    void saveFoodDatabase()
     {
         ofstream out("foodDB.txt");
-        for (auto &x : foodDatabase)
+        for (map<string, vector<int>>::const_iterator it = foodDatabase.begin(); it != foodDatabase.end(); ++it)
         {
-            out << x.first << "," << x.second[0] << " " << x.second[1] << " " << x.second[2] << " " << x.second[3] << "\n";
+            out << it->first << "," << it->second[0] << " " << it->second[1] << " " << it->second[2] << " " << it->second[3] << "\n";
         }
         out.close();
     }
+
     void registerUser()
     {
+        bool exists = false;
         string un, p;
         cout << "-----Register New User-----\n";
         cout << "Enter Username: ";
         getline(cin, un);
+        ifstream in("users.txt");
+        string line;
+        while (getline(in, line))
+        {
+            istringstream iss(line);
+            string firstWord;
+            getline(iss, firstWord, ',');
+            if (firstWord == un)
+            {
+                exists = true;
+                break;
+            }
+        }
+        in.close();
+        if (exists)
+        {
+            cout << "Username already exists! Please choose another.\n";
+            return;
+        }
 
         cout << "Enter Password:";
         getline(cin, p);
-        string line = un + ","+ p;
+        line = un + "," + p;
 
         ofstream out("users.txt", ios::app);
         if (!out)
@@ -94,16 +118,17 @@ public:
             cout << "File could not be opened\n";
             return;
         }
-        out << "\n"<< line;
+        out << "\n"
+            << line;
         out.close();
-        cout << "User registerted";
+        cout << "User registered";
     }
 
     bool loginUser()
     {
         string u, p;
         ifstream in("users.txt");
-        if (!in) 
+        if (!in)
         {
             cout << "Error: could not open users.txt\n";
             return false;
@@ -128,6 +153,7 @@ public:
                 if (s == p)
                 {
                     cout << "LogIn Successful\n";
+                    currentUser = f;
                     return true;
                 }
                 else
@@ -138,8 +164,8 @@ public:
             }
         }
         cout << "Username does not exist\n";
-        return false;
         in.close();
+        return false;
     }
 
     void enterMeal()
@@ -147,10 +173,12 @@ public:
         cout << "\nChoose Meal: 1.Breakfast 2.Lunch 3.Snacks 4.Dinner\n";
         int choice;
         cin >> choice;
-        
-        if (choice % 1 != 0) 
+
+        if (cin.fail() || choice < 1 || choice > 4)
         {
-            cout << "Invalid input. Exiting...\n";
+            cout << "Invalid input. Please choose a number from 1 to 4.\n";
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
             return;
         }
         cin.ignore();
@@ -181,28 +209,28 @@ public:
                 int cal, pro, carb, fat;
                 cout << "Calories: ";
                 cin >> cal;
-                if(cal % 1 != 0)
+                if (cin.fail())
                 {
                     cout << "Not an int!!" << endl;
                     return;
                 }
                 cout << "Protein: ";
                 cin >> pro;
-                if(pro % 1 != 0)
+                if (cin.fail())
                 {
                     cout << "Not an int!!" << endl;
                     return;
                 }
                 cout << "Carbs: ";
                 cin >> carb;
-                if(carb % 1 != 0)
+                if (cin.fail())
                 {
                     cout << "Not an int!!" << endl;
                     return;
                 }
                 cout << "Fats: ";
                 cin >> fat;
-                if(fat % 1 != 0)
+                if (cin.fail())
                 {
                     cout << "Not an int!!" << endl;
                     return;
@@ -220,15 +248,11 @@ public:
 
             cout << food << " added successfully!\n";
         }
+        cout << meal << " entries completed.\n";
 
-        cout << meal << " completed.\n";
-
-        if (meal == "Dinner")
+        if (dailyIntake.count("Breakfast") && dailyIntake.count("Lunch") && dailyIntake.count("Snacks") && dailyIntake.count("Dinner"))
         {
             displayDailySummary();
-<<<<<<< Updated upstream
-            saveDailySummary();
-=======
         }
         saveDailySummary(); // Save after every meal entry
     }
@@ -286,29 +310,29 @@ public:
         else
         {
             cout << "\nInvalid selection or action cancelled.\n";
->>>>>>> Stashed changes
         }
     }
 
-     void displayDailySummary()
+    void displayDailySummary()
     {
+        time_t now = time(0);
+        char *dt = ctime(&now);
+
         int totalCal = 0, totalPro = 0, totalCarb = 0, totalFat = 0;
         cout << "\n====== Daily Nutrition Summary ======\n";
-        for (auto &x : dailyIntake)
+        cout << "Report generated on: " << dt;
+        cout << "------------------------------------\n";
+
+        for (map<string, vector<int>>::iterator it = dailyIntake.begin(); it != dailyIntake.end(); ++it)
         {
-            cout << x.first << " -> Calories:" << x.second[0] << " Protein:" << x.second[1] << " Carbs:" << x.second[2] << " Fats:" << x.second[3] << "\n";
-            totalCal += x.second[0];
-            totalPro += x.second[1];
-            totalCarb += x.second[2];
-            totalFat += x.second[3];
+            cout << it->first << " -> Calories:" << it->second[0] << " Protein:" << it->second[1] << " Carbs:" << it->second[2] << " Fats:" << it->second[3] << "\n";
+            totalCal += it->second[0];
+            totalPro += it->second[1];
+            totalCarb += it->second[2];
+            totalFat += it->second[3];
         }
         cout << "------------------------------------\n";
         cout << "TOTAL -> Calories:" << totalCal << " Protein:" << totalPro << " Carbs:" << totalCarb << " Fats:" << totalFat << "\n";
-<<<<<<< Updated upstream
-    }
-
-        void saveDailySummary()
-=======
 
         // Compare with planned data (if available)
         compareWithPlan(totalCal, totalPro, totalCarb, totalFat);
@@ -406,33 +430,30 @@ public:
     }
 
     void saveDailySummary()
->>>>>>> Stashed changes
     {
         ofstream out(currentUser + "_summary.txt", ios::app);
+
+        // Get the current time
+        time_t now = time(0);
+        char *dt = ctime(&now);
+
+        // Convert to string and remove the newline character that ctime adds
+        string timeStr = dt;
+        timeStr.erase(timeStr.find_last_not_of("\n\r") + 1);
+
         out << "Daily Summary for " << currentUser << ":\n";
-<<<<<<< Updated upstream
-        for (auto &x : dailyIntake)
-=======
 
         out << "Last Updated: " << timeStr << "\n";
         out << "-----------------------------\n";
 
         for (map<string, vector<int>>::iterator it = dailyIntake.begin(); it != dailyIntake.end(); ++it)
->>>>>>> Stashed changes
         {
-            out << x.first << "," << x.second[0] << "," << x.second[1] << "," << x.second[2] << "," << x.second[3] << "\n";
+            out << it->first << "," << it->second[0] << "," << it->second[1] << "," << it->second[2] << "," << it->second[3] << "\n";
         }
-        out << "-----------------------------\n";
         out.close();
     }
 };
 
-<<<<<<< Updated upstream
-int main()
-{
-    Tracker system;
-      while (1)
-=======
 class FunctionwithoutLogin
 {
 private:
@@ -607,37 +628,25 @@ int main()
     Tracker *system = new Tracker();
 
     while (true)
->>>>>>> Stashed changes
     {
         cout << "\n===========================================================================================\n";
-        cout << "                          Simple Fitness/Calorie Tracker                          ";
+        cout << "                                 Simple Fitness/Calorie Tracker                                  ";
         cout << "\n===========================================================================================\n";
-        cout << "   1.ChartOfNeutrition | 2.CalculateNeutrition4YourFood | 3.LogIn | 4.CreateAccount | 5.Exit  ";
+        cout << "   1.ChartOfNutrition | 2.CalculateNutrition4YourFood | 3.LogIn | 4.CreateAccount | 5.Exit   ";
         cout << "\n-------------------------------------------------------------------------------------------\n";
 
         int a;
-        cout<<"Choose Option:";
+        cout << "Choose Option:";
         cin >> a;
-<<<<<<< Updated upstream
-=======
         if (cin.fail())
         {
             cout << "Wrong input!!" << endl;
             return 0;
         }
->>>>>>> Stashed changes
         cin.ignore();
 
         if (a == 1)
         {
-<<<<<<< Updated upstream
-
-        }
-
-        else if (a == 4)
-        {
-            system.registerUser();
-=======
             string filename = "foodDB.txt";
             char choice;
 
@@ -655,53 +664,56 @@ int main()
         {
             nologinfunc->searchFoodFromFile();
             break;
->>>>>>> Stashed changes
         }
 
         else if (a == 3)
         {
-<<<<<<< Updated upstream
-             while (1)
-    {
-            if (system.loginUser() == true)
-=======
             delete nologinfunc;
             system->loadFoodDatabase();
             if (system->loginUser() == true)
->>>>>>> Stashed changes
             {
-                cout << "\n=============================================\n";
-                cout <<"     Welcome choose operation to perfrom     ";
-                cout << "\n---------------------------------------------\n";
-                cout<<" 1.EnterMeal 2.CalculateNeutrition 3.PrePlanDaily";
-                cout << "\n---------------------------------------------\n";
-                int x = 0;
-                cin>>x;
-                switch (x)
+                bool loggedIn = true;
+                while (loggedIn)
                 {
-<<<<<<< Updated upstream
-                case 1:
-                    system.enterMeal();
-                    break;
-=======
                     cout << "\n================================================\n";
                     cout << "                    NutriFit Store                ";
                     cout << "\n------------------------------------------------\n";
                     cout << " 1.EnterMeal 2.Select Course 3.PrePlanner 4.Logout  ";
                     cout << "\n------------------------------------------------\n";
                     cout << "Choose Option: ";
->>>>>>> Stashed changes
 
-                default:
-                    break;
+                    int x;
+                    cin >> x;
+                    if (cin.fail())
+                    {
+                        cout << "Wrong input!! Please enter a number.\n";
+                        cin.clear();
+                        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                        continue;
+                    }
+
+                    switch (x)
+                    {
+                    case 1:
+                        system->enterMeal();
+                        break;
+                    case 2:
+                        system->viewAndSelectCourse();
+                        break;
+                    case 3:
+                        system->prePlanNutrition();
+                        break;
+                    case 4:
+                        cout << "Logging out...\n";
+                        loggedIn = false;
+                        break;
+                    default:
+                        cout << "Invalid option. Please try again.\n";
+                        break;
+                    }
                 }
             }
         }
-<<<<<<< Updated upstream
-        }
-        else if (a == 5)
-        {
-=======
         else if (a == 4)
         {
             system->registerUser();
@@ -710,14 +722,14 @@ int main()
         {
             delete nologinfunc;
             delete system;
->>>>>>> Stashed changes
             return 0;
         }
+        else
+        {
+            cout << "This option is not yet implemented.\n";
+        }
     }
-<<<<<<< Updated upstream
-=======
     delete nologinfunc;
     delete system;
     return 0;
->>>>>>> Stashed changes
 }
