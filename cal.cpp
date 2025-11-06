@@ -20,12 +20,10 @@ public:
         username = u;
         userpassword = p;
     }
-
     string getUsername() const
     {
         return username;
     }
-
     string checkpassword() const
     {
         return userpassword;

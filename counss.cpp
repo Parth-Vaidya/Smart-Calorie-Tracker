@@ -37,7 +37,6 @@ public:
         return userpassword;
     }
 };
-
 struct CourseInfo
 {
     string category;
