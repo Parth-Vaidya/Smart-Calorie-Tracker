@@ -8,7 +8,7 @@
 #include <cctype>
 using namespace std;
 
-class User
+class User//benny
 {
 private:
     string username;
