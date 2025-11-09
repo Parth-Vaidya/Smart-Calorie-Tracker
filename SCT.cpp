@@ -10,43 +10,48 @@
 #include <limits>
 #include <ctime>
 #include <queue>
+#include <set>
 // #include counsellor.cpp
 using namespace std;
 
-class Account {
-protected: // Accessible by derived classes like User and Counsellor
+// Base class for all account types
+class Account
+{
+protected:
     string username;
     string password;
 
 public:
     Account(string u, string p) : username(u), password(p) {}
 
-    string getUsername() const {
+    string getUsername() const
+    {
         return username;
     }
 
-    string checkPassword() const {
+    string checkPassword() const
+    {
         return password;
     }
 
-    // A pure virtual function. This makes Account an "abstract class".
+    // Pure virtual function makes this an abstract class
     virtual void displayDashboard() const = 0;
 
-    //Virtual destructor 
     virtual ~Account() {}
 };
 
-class User : public Account {
+class User : public Account
+{
 private:
     string currentUser;
+
 public:
-    // The constructor now calls the base class constructor
     User(string u, string p) : Account(u, p) {}
     User() : Account("", "") {}
     string getCurrentUser() const { return currentUser; }
 
-    // The 'override' keyword is good practice to ensure we are correctly overriding a base class function.
-    void displayDashboard() const override {
+    void displayDashboard() const override
+    {
         cout << "\n--- Welcome to the User Dashboard, " << getUsername() << "! ---\n";
         cout << "Here you can track meals and enroll in courses.\n";
     }
@@ -137,6 +142,100 @@ public:
     }
 };
 
+// Counsellor class, inherits from Account
+class Counsellor : public Account
+{
+public:
+    string counsellorName;
+
+    Counsellor(string cname, string uname, string p) : Account(uname, p), counsellorName(cname) {}
+
+    void displayDashboard() const override
+    {
+        cout << "\n--- Welcome to the Counsellor Dashboard, " << counsellorName << "! ---\n";
+        cout << "Here you can create courses and view user progress.\n";
+    }
+
+    // Static function to register a new counsellor
+    static void registerCounsellor()
+    {
+        string cname, uname, pass;
+        cout << "-----Register New Counsellor-----\n";
+        cout << "Enter Your Full Name: ";
+        getline(cin, cname);
+        cout << "Enter Username: ";
+        getline(cin, uname);
+
+        // Check if username exists
+        ifstream in("counsellors.txt");
+        string line;
+        bool exists = false;
+        while (getline(in, line))
+        {
+            istringstream iss(line);
+            string fileCname, fileUname;
+            getline(iss, fileCname, ',');
+            getline(iss, fileUname, ',');
+            if (fileUname == uname)
+            {
+                exists = true;
+                break;
+            }
+        }
+        in.close();
+
+        if (exists)
+        {
+            cout << "Username already exists. Please try another.\n";
+            return;
+        }
+
+        cout << "Enter Password: ";
+        getline(cin, pass);
+
+        ofstream out("counsellors.txt", ios::app);
+        out << cname << "," << uname << "," << pass << "\n";
+        out.close();
+        cout << "Counsellor registered successfully.\n";
+    }
+
+    // Static function to log in a counsellor
+    static Counsellor *loginCounsellor()
+    {
+        string uname, pass;
+        cout << "-------Counsellor LogIn-------\n";
+        cout << "Enter Username: ";
+        getline(cin, uname);
+        cout << "Enter Password: ";
+        getline(cin, pass);
+
+        ifstream in("counsellors.txt");
+        if (!in)
+        {
+            cout << "Error: could not open counsellors.txt\n";
+            return nullptr;
+        }
+
+        string line;
+        while (getline(in, line))
+        {
+            istringstream iss(line);
+            string fileCname, fileUname, filePass;
+            getline(iss, fileCname, ',');
+            getline(iss, fileUname, ',');
+            getline(iss, filePass, ',');
+
+            if (fileUname == uname && filePass == pass)
+            {
+                cout << "LogIn Successful\n";
+                return new Counsellor(fileCname, fileUname, filePass);
+            }
+        }
+        cout << "Username or Password does not match.\n";
+        in.close();
+        return nullptr;
+    }
+};
 
 class Tracker
 {
@@ -145,11 +244,11 @@ private:
     map<string, vector<int>> foodDatabase;
     map<string, vector<int>> dailyIntake;
     struct CourseInfo
-{
-    string category;
-    string counsellorName;
-    string fullDetails;
-};
+    {
+        string category;
+        string counsellorName;
+        string fullDetails;
+    };
 
 public:
     void loadFoodDatabase()
@@ -467,6 +566,164 @@ public:
     }
 };
 
+class CounsellorFeatures
+{
+public:
+    void createCourse(const string &counsellorName)
+    {
+        string cat, desc;
+        cout << "Enter Course Category (e.g., Weight Loss): ";
+        getline(cin, cat);
+        cout << "Enter Course Description: ";
+        getline(cin, desc);
+
+        ofstream out("courses.txt", ios::app);
+        out << cat << "," << desc << "," << counsellorName << "\n";
+        out.close();
+        cout << "Course created successfully.\n";
+    }
+
+    void viewMyCourses(const string &counsellorName)
+    {
+        cout << "\n--- Courses Created By " << counsellorName << " ---\n";
+        ifstream in("courses.txt");
+        if (!in)
+        {
+            cout << "Could not open courses.txt file.\n";
+            return;
+        }
+
+        string line;
+        bool foundCourses = false;
+        while (getline(in, line))
+        {
+            istringstream iss(line);
+            string cat, desc, fileCounsellorName;
+
+            getline(iss, cat, ',');
+            getline(iss, desc, ',');
+            getline(iss, fileCounsellorName, ',');
+
+            if (fileCounsellorName == counsellorName)
+            {
+                cout << "Category: " << cat << "\n";
+                cout << "  Description: " << desc << "\n";
+                cout << "---------------------------------\n";
+                foundCourses = true;
+            }
+        }
+        in.close();
+
+        if (!foundCourses)
+        {
+            cout << "You have not created any courses yet.\n";
+        }
+    }
+
+    // Shows which users are in which courses
+    void viewEnrolledUsers(const string &counsellorName)
+    {
+
+        // Load this counsellor's course descriptions
+        map<string, string> courseDetailsMap;
+        ifstream coursesFile("courses.txt");
+        if (coursesFile)
+        {
+            string line;
+            while (getline(coursesFile, line))
+            {
+                istringstream iss(line);
+                string cat, desc, fileCounsellorName;
+                getline(iss, cat, ',');
+                getline(iss, desc, ',');
+                getline(iss, fileCounsellorName, ',');
+                if (fileCounsellorName == counsellorName)
+                {
+                    courseDetailsMap[cat] = desc;
+                }
+            }
+        }
+        coursesFile.close();
+
+        ifstream in("enrollments.txt");
+        if (!in)
+        {
+            cout << "No enrollment data found.\n";
+            return;
+        }
+
+        map<string, vector<string>> enrolledUsersByCourse;
+        set<string> validUsernames;
+        string line;
+        while (getline(in, line))
+        {
+            istringstream iss(line);
+            string courseCat, fileCounsellorName, enrolledUsername;
+            getline(iss, courseCat, ',');
+            getline(iss, fileCounsellorName, ',');
+            getline(iss, enrolledUsername);
+            if (fileCounsellorName == counsellorName)
+            {
+                enrolledUsersByCourse[courseCat].push_back(enrolledUsername);
+                validUsernames.insert(enrolledUsername);
+            }
+        }
+        in.close();
+
+        if (enrolledUsersByCourse.empty())
+        {
+            cout << "No users have enrolled in your courses yet.\n";
+            return;
+        }
+        cout << "\n--- Users Enrolled in Your Courses ---\n";
+        for (const auto &pair : enrolledUsersByCourse)
+        {
+            string courseCategory = pair.first;
+            string courseDesc = courseDetailsMap.count(courseCategory) ? courseDetailsMap[courseCategory] : "N/A";
+
+            cout << "Course: " << courseCategory << " (" << courseDesc << ")\n";
+            for (const auto &user : pair.second)
+            {
+                cout << "  - User: " << user << "\n";
+            }
+        }
+        cout << "-------------------------------------\n";
+
+        while (true)
+        {
+            cout << "\nEnter a username to view their summary (or type 'back' to return): ";
+            string usernameToView;
+            getline(cin, usernameToView);
+            if (usernameToView == "back")
+                break;
+
+            if (validUsernames.find(usernameToView) == validUsernames.end())
+            {
+                cout << "Error: User '" << usernameToView << "' is not enrolled in your courses.\n";
+                continue;
+            }
+
+            string filename = usernameToView + "_summary.txt";
+            ifstream summaryFile(filename);
+            if (summaryFile.is_open())
+            {
+                cout << "\n--- Displaying Summary for " << usernameToView << " ---\n";
+                string summaryLine;
+                while (getline(summaryFile, summaryLine))
+                {
+                    cout << summaryLine << endl;
+                }
+                cout << "--- End of Summary ---\n";
+                summaryFile.close();
+            }
+            else
+            {
+                cout << "Could not find a summary file for user '" << usernameToView << "'.\n";
+            }
+        }
+    }
+};
+
 class FunctionwithoutLogin
 {
 private:
@@ -492,7 +749,7 @@ public:
             cerr << "Error: Cannot open " << foodDB << endl;
             return;
         }
-      foodData.clear();
+        foodData.clear();
         string line;
         while (getline(file, line))
         {
@@ -644,10 +901,12 @@ int main()
     while (true)
     {
         cout << "\n===========================================================================================\n";
-        cout << "                                 Simple Fitness/Calorie Tracker                                  ";
-        cout << "\n===========================================================================================\n";
-        cout << "   1.ChartOfNutrition | 2.CalculateNutrition4YourFood | 3.LogIn | 4.CreateAccount | 5.Exit   ";
-        cout << "\n-------------------------------------------------------------------------------------------\n";
+        cout << "                                      N U T R I F I T                                      \n";
+        cout << "                     where you can calculate, track, and maintain your Meal             \n";
+        cout << "===========================================================================================\n";
+        cout << "     1. Chart Of Nutrition  |  2. Calculate Nutrition For Your Food  |  3. Log In          \n";
+        cout << "     4. Create Account       |  5. Exit                                                     \n";
+        cout << "-------------------------------------------------------------------------------------------\n";
 
         int a;
         cout << "Choose Option:";
@@ -684,53 +943,130 @@ int main()
         {
             delete nologinfunc;
             system->loadFoodDatabase();
-            if (user.loginUser() == true)
+            // Ask for account type
+            cout << "Login as: 1.User 2.Counsellor\n";
+            int loginChoice;
+            cin >> loginChoice;
+
+            cin.ignore();
+            if (loginChoice == 1)
             {
-                bool loggedIn = true;
-                while (loggedIn)
+                // User Login Logic
+                if (user.loginUser() == true)
                 {
-                    cout << "\n================================================\n";
-                    cout << "                    NutriFit Store                ";
-                    cout << "\n------------------------------------------------\n";
-                    cout << " 1.EnterMeal 2.Select Course 3.PrePlanner 4.Logout  ";
-                    cout << "\n------------------------------------------------\n";
-                    cout << "Choose Option: ";
-
-                    int x;
-                    cin >> x;
-                    if (cin.fail())
+                    bool loggedIn = true;
+                    while (loggedIn)
                     {
-                        cout << "Wrong input!! Please enter a number.\n";
-                        cin.clear();
-                        cin.ignore(numeric_limits<streamsize>::max(), '\n');
-                        continue;
-                    }
+                        cout << "\n================================================\n";
+                        cout << "                    NutriFit Store                ";
+                        cout << "\n------------------------------------------------\n";
+                        cout << " 1.EnterMeal 2.Select Course 3.PrePlanner 4.Logout  ";
+                        cout << "\n------------------------------------------------\n";
+                        cout << "Choose Option: ";
 
-                    switch (x)
-                    {
-                    case 1:
-                        system->enterMeal();
-                        break;
-                    case 2:
-                        system->viewAndSelectCourse();
-                        break;
-                    case 3:
-                        system->prePlanNutrition();
-                        break;
-                    case 4:
-                        cout << "Logging out...\n";
-                        loggedIn = false;
-                        break;
-                    default:
-                        cout << "Invalid option. Please try again.\n";
-                        break;
+                        int x;
+                        cin >> x;
+                        if (cin.fail())
+                        {
+                            cout << "Wrong input!! Please enter a number.\n";
+                            cin.clear();
+                            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                            continue;
+                        }
+
+                        switch (x)
+                        {
+                        case 1:
+                            system->enterMeal();
+                            break;
+                        case 2:
+                            system->viewAndSelectCourse();
+                            break;
+                        case 3:
+                            system->prePlanNutrition();
+                            break;
+                        case 4:
+                            cout << "Logging out...\n";
+                            loggedIn = false;
+                            break;
+                        default:
+                            cout << "Invalid option. Please try again.\n";
+                            break;
+                        }
                     }
                 }
+            }
+            else if (loginChoice == 2)
+            {
+                // Counsellor Login Logic
+                
+                Counsellor *loggedInCounsellor = Counsellor::loginCounsellor();
+                if (loggedInCounsellor != nullptr)
+                {
+
+                    loggedInCounsellor->displayDashboard();
+                    CounsellorFeatures features;
+                    bool counsellorLoggedIn = true;
+
+                    while (counsellorLoggedIn)
+                    {
+                        cout << "\n--- Counsellor Menu ---\n";
+                        cout << "1. Create Course\n";
+                        cout << "2. View My Courses\n";
+                        cout << "3. View Enrolled Users\n";
+                        cout << "4. Logout\n";
+                        cout << "Choose: ";
+                        int cChoice;
+                        cin >> cChoice;
+                        cin.ignore();
+
+                        switch (cChoice)
+                        {
+                        case 1:
+                            features.createCourse(loggedInCounsellor->counsellorName);
+                            break;
+                        case 2:
+                            features.viewMyCourses(loggedInCounsellor->counsellorName);
+                            break;
+                        case 3:
+                            features.viewEnrolledUsers(loggedInCounsellor->counsellorName);
+                            break;
+                        case 4:
+                            counsellorLoggedIn = false;
+                            break;
+                        default:
+                            cout << "Invalid choice.\n";
+                        }
+                    }
+
+                    delete loggedInCounsellor; // Clean up the object
+                    loggedInCounsellor = nullptr;
+                }
+            }
+            else
+            {
+                cout << "Invalid choice.\n";
             }
         }
         else if (a == 4)
         {
-            user.registerUser();
+            // Ask for account type
+            cout << "Register as: 1.User 2.Counsellor\n";
+            int regChoice;
+            cin >> regChoice;
+            cin.ignore();
+            if (regChoice == 1)
+            {
+                user.registerUser();
+            }
+            else if (regChoice == 2)
+            {
+                Counsellor::registerCounsellor();
+            }
+            else
+            {
+                cout << "Invalid choice.\n";
+            }
         }
         else if (a == 5)
         {
