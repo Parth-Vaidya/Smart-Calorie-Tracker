@@ -13,74 +13,43 @@
 // #include counsellor.cpp
 using namespace std;
 
-class User
-{
-private:
+class Account {
+protected: // Accessible by derived classes like User and Counsellor
     string username;
-    string userpassword;
+    string password;
 
 public:
-    User(string u, string p)
-    {
-        username = u;
-        userpassword = p;
-    }
+    Account(string u, string p) : username(u), password(p) {}
 
-    string getUsername() const
-    {
+    string getUsername() const {
         return username;
     }
 
-    string checkpassword() const
-    {
-        return userpassword;
+    string checkPassword() const {
+        return password;
     }
+
+    // A pure virtual function. This makes Account an "abstract class".
+    virtual void displayDashboard() const = 0;
+
+    //Virtual destructor 
+    virtual ~Account() {}
 };
 
-struct CourseInfo
-{
-    string category;
-    string counsellorName;
-    string fullDetails;
-};
-
-class Tracker
-{
+class User : public Account {
 private:
     string currentUser;
-    map<string, vector<int>> foodDatabase;
-    map<string, vector<int>> dailyIntake;
-
 public:
-    void loadFoodDatabase()
-    {
-        ifstream in("foodDB.txt");
-        if (!in)
-            return;
+    // The constructor now calls the base class constructor
+    User(string u, string p) : Account(u, p) {}
+    User() : Account("", "") {}
+    string getCurrentUser() const { return currentUser; }
 
-        string line;
-        while (getline(in, line))
-        {
-            istringstream iss(line);
-            string food;
-            int cal, pro, carb, fat;
-            getline(iss, food, ',');
-            iss >> cal >> pro >> carb >> fat;
-            foodDatabase[food] = {cal, pro, carb, fat};
-        }
-        in.close();
+    // The 'override' keyword is good practice to ensure we are correctly overriding a base class function.
+    void displayDashboard() const override {
+        cout << "\n--- Welcome to the User Dashboard, " << getUsername() << "! ---\n";
+        cout << "Here you can track meals and enroll in courses.\n";
     }
-
-    void saveFoodDatabase()
-    {
-        ofstream out("foodDB.txt");
-        for (map<string, vector<int>>::const_iterator it = foodDatabase.begin(); it != foodDatabase.end(); ++it)
-        {
-            out << it->first << "," << it->second[0] << " " << it->second[1] << " " << it->second[2] << " " << it->second[3] << "\n";
-        }
-        out.close();
-    }
-
     void registerUser()
     {
         bool exists = false;
@@ -118,8 +87,7 @@ public:
             cout << "File could not be opened\n";
             return;
         }
-        out << "\n"
-            << line;
+        out << line << "\n";
         out.close();
         cout << "User registered";
     }
@@ -166,6 +134,51 @@ public:
         cout << "Username does not exist\n";
         in.close();
         return false;
+    }
+};
+
+
+class Tracker
+{
+private:
+    string currentUser;
+    map<string, vector<int>> foodDatabase;
+    map<string, vector<int>> dailyIntake;
+    struct CourseInfo
+{
+    string category;
+    string counsellorName;
+    string fullDetails;
+};
+
+public:
+    void loadFoodDatabase()
+    {
+        ifstream in("foodDB.txt");
+        if (!in)
+            return;
+
+        string line;
+        while (getline(in, line))
+        {
+            istringstream iss(line);
+            string food;
+            int cal, pro, carb, fat;
+            getline(iss, food, ',');
+            iss >> cal >> pro >> carb >> fat;
+            foodDatabase[food] = {cal, pro, carb, fat};
+        }
+        in.close();
+    }
+
+    void saveFoodDatabase()
+    {
+        ofstream out("foodDB.txt");
+        for (map<string, vector<int>>::const_iterator it = foodDatabase.begin(); it != foodDatabase.end(); ++it)
+        {
+            out << it->first << "," << it->second[0] << " " << it->second[1] << " " << it->second[2] << " " << it->second[3] << "\n";
+        }
+        out.close();
     }
 
     void enterMeal()
@@ -624,6 +637,7 @@ public:
 int main()
 {
 
+    User user;
     FunctionwithoutLogin *nologinfunc = new FunctionwithoutLogin();
     Tracker *system = new Tracker();
 
@@ -670,7 +684,7 @@ int main()
         {
             delete nologinfunc;
             system->loadFoodDatabase();
-            if (system->loginUser() == true)
+            if (user.loginUser() == true)
             {
                 bool loggedIn = true;
                 while (loggedIn)
@@ -716,7 +730,7 @@ int main()
         }
         else if (a == 4)
         {
-            system->registerUser();
+            user.registerUser();
         }
         else if (a == 5)
         {
