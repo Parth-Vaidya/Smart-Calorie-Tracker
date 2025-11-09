@@ -944,7 +944,10 @@ int main()
             delete nologinfunc;
             system->loadFoodDatabase();
             // Ask for account type
-            cout << "Login as: 1.User 2.Counsellor\n";
+            cout << "\nLogin as:\n";
+            cout << "  [1] User\n";
+            cout << "  [2] Counsellor\n";
+            cout << "Enter choice: ";
             int loginChoice;
             cin >> loginChoice;
 
@@ -999,7 +1002,7 @@ int main()
             else if (loginChoice == 2)
             {
                 // Counsellor Login Logic
-                
+
                 Counsellor *loggedInCounsellor = Counsellor::loginCounsellor();
                 if (loggedInCounsellor != nullptr)
                 {
@@ -1051,7 +1054,10 @@ int main()
         else if (a == 4)
         {
             // Ask for account type
-            cout << "Register as: 1.User 2.Counsellor\n";
+            cout << "\nRegister as:\n";
+            cout << "  [1] User\n";
+            cout << "  [2] Counsellor\n";
+            cout << "Enter choice: ";
             int regChoice;
             cin >> regChoice;
             cin.ignore();
