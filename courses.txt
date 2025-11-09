@@ -1,0 +1,4 @@
+Weight Loss,3000,3000,3000,3000,this is a test course,test
+weight gain,3000,4,5,5,abc course,abc
+weight gain,0,-1838620833,17114616,17114616,,parth
+fat loss,3000,20,20,20,hi,chirag

@@ -1,100 +1,103 @@
-poha,250 5 45 6
-upma,220 6 40 7
-idli,70 2 12 0
-dosa,168 4 30 4
-uttapam,200 5 35 5
-medu vada,150 3 20 6
-samosa,150 3 18 8
-pakora,180 4 15 10
-pav bhaji,290 8 38 12
-vada pav,300 7 40 14
-bhel puri,160 4 28 4
-pani puri,175 3 30 5
-sev puri,190 4 25 6
-chole bhature,450 14 55 18
-rajma chawal,380 13 55 8
-dal tadka,180 9 25 5
-dal fry,200 10 20 8
-sambar,150 6 22 4
-rasam,80 3 12 2
-curd rice,230 7 30 6
-lemon rice,240 5 35 7
-tamarind rice,250 6 40 6
-vegetable pulao,280 6 42 8
-jeera rice,220 4 45 3
-plain rice,200 4 45 1
-roti,120 3 20 2
-paratha,180 5 30 6
-aloo paratha,290 7 38 12
-paneer paratha,320 12 35 14
-naan,260 7 42 8
-butter naan,310 7 45 12
-kulcha,270 8 40 9
-thepla,190 5 28 6
-bhakri,200 6 32 7
-missi roti,210 7 30 6
-stuffed paratha,300 8 36 11
-khichdi,230 8 35 5
-curd,100 6 7 4
-buttermilk,50 3 6 1
-lassi,180 6 28 4
-milk,120 8 11 5
-paneer butter masala,350 12 15 28
-shahi paneer,400 14 18 30
-kadai paneer,320 15 20 22
-palak paneer,280 12 18 18
-matar paneer,310 13 22 20
-chole,270 13 35 9
-rajma,250 12 32 7
-bhindi masala,180 5 20 10
 aloo gobi,200 6 25 9
+aloo mutter,220 6 28 9
+aloo paratha,290 7 38 12
 baingan bharta,220 5 18 14
-lauki sabzi,120 4 15 5
-tinda curry,130 4 16 6
-kadhi pakora,250 9 22 12
-chicken curry,280 25 8 15
+bhakri,200 6 32 7
+bhel puri,160 4 28 4
+bhindi masala,180 5 20 10
+biryani veg,360 9 55 12
+bisibele bath,320 9 48 9
+boiled egg,70 6 1 5
+butter chicken,430 28 12 28
+butter naan,310 7 45 12
+buttermilk,50 3 6 1
 chicken biryani,400 27 45 12
-mutton curry,350 30 6 20
-mutton biryani,420 28 46 14
+chicken curry,280 25 8 15
+chicken tikka,320 28 6 18
+chole,270 13 35 9
+chole bhature,450 14 55 18
+crab curry,280 25 7 15
+curd,100 6 7 4
+curd rice,230 7 30 6
+curd rice (tempered),240 8 32 7
+daal,200 12 23 54
+dal fry,200 10 20 8
+dal tadka,180 9 25 5
+dosa,168 4 30 4
+egg bhurji,200 14 4 15
+egg curry,250 18 6 14
 fish curry,240 22 5 12
 fish fry,300 26 8 18
-egg curry,250 18 6 14
-boiled egg,70 6 1 5
+gobi manchurian,300 8 28 15
+gulab jamun,300 5 40 12
+idli,70 2 12 0
+jalebi,220 2 45 6
+jeera rice,220 4 45 3
+kadai paneer,320 15 20 22
+kadhi pakora,250 9 22 12
+kebabs (galouti),350 25 10 22
+kheer,280 7 38 10
+khichdi,230 8 35 5
+kulcha,270 8 40 9
+laddu,250 6 32 11
+lassi,180 6 28 4
+lauki sabzi,120 4 15 5
+lemon rice,240 5 35 7
+masala dosa,350 8 45 12
+matar paneer,310 13 22 20
+medu vada,150 3 20 6
+milk,120 8 11 5
+missi roti,210 7 30 6
+mixed veg sabzi,210 7 26 9
+mutton biryani,420 28 46 14
+mutton curry,350 30 6 20
+mysore dosa,370 9 46 13
+naan,260 7 42 8
 omelette,150 10 2 12
-egg bhurji,200 14 4 15
+pakora,180 4 15 10
+palak paneer,280 12 18 18
+paneer,230 21 43 23
+paneer butter masala,350 12 15 28
+paneer manchurian,340 12 22 20
+paneer paratha,320 12 35 14
+paneer tikka,300 20 10 22
+pani puri,175 3 30 5
+paratha,180 5 30 6
+pav bhaji,290 8 38 12
+pizza,200 24 122 43
+plain rice,200 4 45 1
+poha,250 5 45 6
+pongal,280 8 40 9
 prawns curry,260 24 6 14
 prawns fry,300 27 5 18
-crab curry,280 25 7 15
-paneer tikka,300 20 10 22
-chicken tikka,320 28 6 18
-seekh kebab,330 26 5 20
-tandoori chicken,340 30 6 16
-butter chicken,430 28 12 28
-kebabs (galouti),350 25 10 22
-biryani veg,360 9 55 12
-veg fried rice,300 7 50 8
-masala dosa,350 8 45 12
-mysore dosa,370 9 46 13
-rava dosa,330 7 44 11
-set dosa,300 6 42 10
-uttapam onion,320 7 44 11
-pongal,280 8 40 9
-ven pongal,290 9 42 10
-puliyodarai,270 6 44 7
-bisibele bath,320 9 48 9
-vegetable curry,200 6 25 8
-mixed veg sabzi,210 7 26 9
-alo mutter,220 6 28 9
-gobi manchurian,300 8 28 15
-veg manchurian,310 9 30 14
-paneer manchurian,340 12 22 20
 pulao peas,260 6 38 8
-sambar rice,250 8 38 7
-curd rice (tempered),240 8 32 7
-sweet lassi,200 7 32 4
-jalebi,220 2 45 6
-gulab jamun,300 5 40 12
+puliyodarai,270 6 44 7
+rajma,250 12 32 7
+rajma chawal,380 13 55 8
+rasam,80 3 12 2
 rasgulla,180 4 36 2
-laddu,250 6 32 11
-kheer,280 7 38 10
+rava dosa,330 7 44 11
+roti,120 3 20 2
+sambar,150 6 22 4
+sambar rice,250 8 38 7
+samosa,150 3 18 8
+seekh kebab,330 26 5 20
+set dosa,300 6 42 10
+sev puri,190 4 25 6
+shahi paneer,400 14 18 30
 sooji halwa,290 5 40 12
+stuffed paratha,300 8 36 11
+sweet lassi,200 7 32 4
+tamarind rice,250 6 40 6
+tandoori chicken,340 30 6 16
+thepla,190 5 28 6
+tinda curry,130 4 16 6
+upma,220 6 40 7
+uttapam,200 5 35 5
+uttapam onion,320 7 44 11
+vada pav,300 7 40 14
+veg fried rice,300 7 50 8
+veg manchurian,310 9 30 14
+vegetable curry,200 6 25 8
+vegetable pulao,280 6 42 8
+ven pongal,290 9 42 10
