@@ -97,19 +97,16 @@ public:
         cout << "User registered";
     }
 
-    bool loginUser()
+    bool loginUser(string name)
     {
         string u, p;
+        u=name;
         ifstream in("users.txt");
         if (!in)
         {
             cout << "Error: could not open users.txt\n";
             return false;
         }
-
-        cout << "-------User LogIn-------\n";
-        cout << "Enter User name:";
-        getline(cin, u);
         string line;
         while (getline(in, line))
         {
@@ -121,6 +118,7 @@ public:
             if (f == u)
             {
                 cout << "Enter Password:";
+                cin.ignore();
                 getline(cin, p);
 
                 if (s == p)
@@ -251,6 +249,9 @@ private:
     };
 
 public:
+Tracker(string name){
+    currentUser=name;
+}
     void loadFoodDatabase()
     {
         ifstream in("foodDB.txt");
@@ -365,8 +366,9 @@ public:
         if (dailyIntake.count("Breakfast") && dailyIntake.count("Lunch") && dailyIntake.count("Snacks") && dailyIntake.count("Dinner"))
         {
             displayDailySummary();
+            saveDailySummary(); // Save after dinner meal entry
         }
-        saveDailySummary(); // Save after every meal entry
+        // saveDailySummary(); // Save after every meal entry
     }
 
     void viewAndSelectCourse()
@@ -568,20 +570,44 @@ public:
 
 class CounsellorFeatures
 {
-public:
-    void createCourse(const string &counsellorName)
-    {
-        string cat, desc;
-        cout << "Enter Course Category (e.g., Weight Loss): ";
-        getline(cin, cat);
-        cout << "Enter Course Description: ";
-        getline(cin, desc);
+public:void createCourse(const string &counsellorName)
+{
+    string name, price, calories, protein, carbs, desc;
 
-        ofstream out("courses.txt", ios::app);
-        out << cat << "," << desc << "," << counsellorName << "\n";
-        out.close();
-        cout << "Course created successfully.\n";
-    }
+    cout << "Enter Course Name: ";
+    getline(cin, name);
+
+    cout << "Enter Course Price (INR): ";
+    getline(cin, price);
+
+    cout << "Enter Daily Calories: ";
+    getline(cin, calories);
+
+    cout << "Enter Daily Protein (g): ";
+    getline(cin, protein);
+
+    cout << "Enter Daily Carbs (g): ";
+    getline(cin, carbs);
+
+    cout << "Enter Course Description: ";
+    getline(cin, desc);
+
+    ofstream out("courses.txt", ios::app);
+
+    // name, price, calories, protein, carbs, description, counsellor
+    out << name << ","
+        << price << ","
+        << calories << ","
+        << protein << ","
+        << carbs << ","
+        << desc << ","
+        << counsellorName << "\n";
+
+    out.close();
+
+    cout << "Course created successfully.\n";
+}
+
 
     void viewMyCourses(const string &counsellorName)
     {
@@ -896,16 +922,15 @@ int main()
 
     User user;
     FunctionwithoutLogin *nologinfunc = new FunctionwithoutLogin();
-    Tracker *system = new Tracker();
 
     while (true)
     {
-        cout << "\n===========================================================================================\n";
+        cout << "\n=========================================================================================\n";
         cout << "                                      N U T R I F I T                                      \n";
         cout << "                     where you can calculate, track, and maintain your Meal             \n";
         cout << "===========================================================================================\n";
         cout << "     1. Chart Of Nutrition  |  2. Calculate Nutrition For Your Food  |  3. Log In          \n";
-        cout << "     4. Create Account       |  5. Exit                                                     \n";
+        cout << "     4. Create Account      |  5. Exit                                                     \n";
         cout << "-------------------------------------------------------------------------------------------\n";
 
         int a;
@@ -942,29 +967,31 @@ int main()
         else if (a == 3)
         {
             delete nologinfunc;
-            system->loadFoodDatabase();
+
             // Ask for account type
-            cout << "\nLogin as:\n";
-            cout << "  [1] User\n";
-            cout << "  [2] Counsellor\n";
-            cout << "Enter choice: ";
+            cout << "Login as: 1.User 2.Counsellor\n";
             int loginChoice;
             cin >> loginChoice;
-
+            string name;
             cin.ignore();
             if (loginChoice == 1)
             {
                 // User Login Logic
-                if (user.loginUser() == true)
+                cout << "-------User LogIn-------\n";
+                cout << "Enter User name:";
+                cin>>name;
+                if (user.loginUser(name) == true)
                 {
+                    Tracker *system = new Tracker(name);
+                    system->loadFoodDatabase();
                     bool loggedIn = true;
                     while (loggedIn)
                     {
-                        cout << "\n================================================\n";
-                        cout << "                    NutriFit Store                ";
-                        cout << "\n------------------------------------------------\n";
-                        cout << " 1.EnterMeal 2.Select Course 3.PrePlanner 4.Logout  ";
-                        cout << "\n------------------------------------------------\n";
+                        cout << "\n==================================================================\n";
+                        cout << "                          NutriFit Tracker                           ";
+                        cout << "\n------------------------------------------------------------------\n";
+                        cout << " 1.EnterMeal  |  2.Select Course  |   3.PrePlanner   |     4.Logout ";
+                        cout << "\n-------------------------------------------------------------------\n";
                         cout << "Choose Option: ";
 
                         int x;
@@ -991,6 +1018,7 @@ int main()
                         case 4:
                             cout << "Logging out...\n";
                             loggedIn = false;
+                            delete system;
                             break;
                         default:
                             cout << "Invalid option. Please try again.\n";
@@ -1054,10 +1082,7 @@ int main()
         else if (a == 4)
         {
             // Ask for account type
-            cout << "\nRegister as:\n";
-            cout << "  [1] User\n";
-            cout << "  [2] Counsellor\n";
-            cout << "Enter choice: ";
+            cout << "Register as: 1.User 2.Counsellor\n";
             int regChoice;
             cin >> regChoice;
             cin.ignore();
@@ -1077,7 +1102,6 @@ int main()
         else if (a == 5)
         {
             delete nologinfunc;
-            delete system;
             return 0;
         }
         else
@@ -1085,7 +1109,5 @@ int main()
             cout << "This option is not yet implemented.\n";
         }
     }
-    delete nologinfunc;
-    delete system;
     return 0;
 }

@@ -1,5 +1,4 @@
-Weight Loss,3000,3000,3000,3000,this is a test course,test
-weight gain,3000,4,5,5,abc course,abc
-weight gain,0,-1838620833,17114616,17114616,,parth
-fat loss,3000,20,20,20,hi,chirag
-weight maintainance,EatingWellMaintingWeightWell,drparth
+Elite Weight Loss Program,2999,1800,120,200,A structured fat-burning plan with weekly progress checks,DrParth
+Lean Muscle Builder,3499,2800,160,320,A focused muscle-gain course designed for steady hypertrophy,ChiRagFit
+Total Body Transformation,3299,2000,140,250,A complete 8-week transformation program for overall fitness,AdityaFit
+Advanced Strength & Conditioning,3799,3000,180,350,A high-performance training cycle for strength and endurance,ProfAbhishek
