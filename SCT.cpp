@@ -1,11 +1,6 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-// NAVIGATION TAB FOR OOPS
-// constructor
-// destructor
-// PureVirtualFunction
-// Inheritance
 class Account
 {
 protected:
