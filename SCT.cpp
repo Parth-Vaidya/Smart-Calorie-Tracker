@@ -1,6 +1,11 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+// NAVIGATION TAB FOR OOPS
+// constructor
+// destructor
+// PureVirtualFunction
+// Inheritance
 class Account
 {
 protected:
@@ -9,8 +14,7 @@ protected:
 
 public:
     // constructor
-    Account(string u, string p)
-    {
+    Account(string u, string p){
         username = u;
         password = p;
     }
@@ -33,8 +37,7 @@ private:
 
 public:
 
-    User(string u, string p) : Account(u, p)
-    {
+    User(string u, string p) : Account(u, p){
         username = u;
         password = p;
     }
@@ -43,13 +46,11 @@ public:
 
     string getliveuser() const {return liveuser;}
 
-    void dashdisplay() const override
-    {
+    void dashdisplay() const override{
         cout << "\n--- Welcome to the User Dashboard, " << getun() << "! ---\n";
         cout << "Here you can track meals and enroll in courses.\n";
     }
-    void userreg()
-    {
+    void userreg(){
         bool exists = false;
         string un, p;
         cout << "-----Register New User-----\n";
@@ -57,13 +58,11 @@ public:
         getline(cin, un);
         ifstream in("users.txt");
         string line;
-        while (getline(in, line))
-        {
+        while (getline(in, line)){
             istringstream iss(line);
             string temp;
             getline(iss, temp, ',');
-            if (temp == un)
-            {
+            if (temp == un){
                 exists = true;
                 break;
             }
@@ -71,8 +70,7 @@ public:
 
         in.close();
 
-        if (exists)
-        {
+        if (exists){
             cout << "Username already exists! Please choose another.\n";
             return;
         }
@@ -84,8 +82,7 @@ public:
         line = un + "," + p;
         ofstream out("users.txt", ios::app); // points at last of line to append
 
-        if (!out)
-        {
+        if (!out){
             cout << "File could not be opened\n";
             return;
         }
@@ -94,13 +91,11 @@ public:
         cout << "User registered";
     }
 
-    bool userlogin()
-    {
+    bool userlogin(){
         string u, p;
         ifstream in("users.txt");
 
-        if (!in)
-        {
+        if (!in){
             cout << "Error: could not open users.txt\n";
             return false;
         }
@@ -109,26 +104,22 @@ public:
         cout << "Enter User name:";
         getline(cin, u);
         string line;
-        while (getline(in, line))
-        {
+        while (getline(in, line)){
             istringstream iss(line);
             string f, s;
             getline(iss, f, ',');
             getline(iss, s, ',');
 
-            if (f == u)
-            {
+            if (f == u){
                 cout << "Enter Password:";
                 getline(cin, p);
 
-                if (s == p)
-                {
+                if (s == p){
                     cout << "LogIn Successful\n";
                     liveuser = f;
                     return true;
                 }
-                else
-                {
+                else{
                     cout << "Passwords Does not match\n";
                     return false;
                 }
@@ -149,15 +140,13 @@ public:
     // constructor
     Counsellor(string cname, string uname, string p) : Account(uname, p) {counsn = cname;}
 
-    void dashdisplay() const override
-    {
+    void dashdisplay() const override{
         cout << "\n--- Welcome to the Counsellor Dashboard, " << counsn << "! ---\n";
         cout << "Here you can create courses and view user progress.\n";
     }
 
     // function to register a new counsellor
-    static void counsreg()
-    {
+    static void counsreg(){
         string cname, uname, pass;
         cout << "-----Register New Counsellor-----\n";
         cout << "Enter Your Full Name: ";
@@ -168,22 +157,19 @@ public:
         ifstream in("counsellors.txt");
         string line;
         bool exists = false;
-        while (getline(in, line))
-        {
+        while (getline(in, line)){
             istringstream iss(line);
             string counsnamefile, usernfile;
             getline(iss, counsnamefile, ',');
             getline(iss, usernfile, ',');
-            if (usernfile == uname)
-            {
+            if (usernfile == uname){
                 exists = true;
                 break;
             }
         }
         in.close();
 
-        if (exists)
-        {
+        if (exists){
             cout << "Username already exists. Please try another.\n";
             return;
         }
@@ -198,8 +184,7 @@ public:
     }
 
     // function to log in a counsellor
-    static Counsellor *counslogin()
-    {
+    static Counsellor *counslogin(){
         string uname, pass;
         cout << "-------Counsellor LogIn-------\n";
         cout << "Enter Username: ";
@@ -208,15 +193,13 @@ public:
         getline(cin, pass);
 
         ifstream in("counsellors.txt");
-        if (!in)
-        {
+        if (!in){
             cout << "Could not open counsellors.txt\n";
             return nullptr;
         }
 
         string line;
-        while (getline(in, line))
-        {
+        while (getline(in, line)){
             istringstream iss(line);
             string counsnamefile, usernfile, passfile;
             getline(iss, counsnamefile, ',');
@@ -250,8 +233,7 @@ private:
     };
 
 public:
-    void loadfdb()
-    {
+    void loadfdb(){
         ifstream in("foodDB.txt");
         if (!in) return;
         string line;
@@ -268,8 +250,7 @@ public:
         in.close();
     }
 
-    void savefdb()
-    {
+    void savefdb(){
         ofstream out("foodDB.txt");
 
         // iterate on maps
@@ -277,14 +258,12 @@ public:
         out.close();
     }
 
-    void whatmeal()
-    {
+    void whatmeal(){
         cout << "\nChoose Meal: 1.Breakfast 2.Lunch 3.Snacks 4.Dinner\n";
         int choice;
         cin >> choice;
 
-        if (choice < 1 || choice > 4)
-        {
+        if (choice < 1 || choice > 4){
             cout << "Invalid input. Please choose a number from 1 to 4.\n";
             cin.clear();
             return;
@@ -299,43 +278,37 @@ public:
         cout << "Start adding food items for " << meal << ". Type 'done' when finished.\n";
 
         string food;
-        while (true)
-        {
+        while (true){
             cout << "Food: ";
             getline(cin, food);
 
             if (food == "done") break;
             
             // add new foods into database
-            if (fooddb.find(food) == fooddb.end())
-            {
+            if (fooddb.find(food) == fooddb.end()){
                 cout << "Food not found in database. Enter macros for " << food << ":\n";
                 int cal, pro, carb, fat;
                 cout << "Calories: ";
                 cin >> cal;
-                if (cin.fail())
-                {
+                if (cin.fail()){
                     cout << "Not an int!!" << endl;
                     return;
                 }
                 cout << "Protein: ";
                 cin >> pro;
-                if (cin.fail())
-                {
+                if (cin.fail()){
                     cout << "Not an int!!" << endl;
                     return;
                 }
                 cout << "Carbs: ";
                 cin >> carb;
-                if (cin.fail())
-                {
+                if (cin.fail()){
                     cout << "Not an int!!" << endl;
                     return;
                 }
                 cout << "Fats: ";
                 cin >> fat;
-                if (cin.fail())
-                {
+                if (cin.fail()){
                     cout << "Not an int!!" << endl;
                     return;
                 }
@@ -347,31 +320,25 @@ public:
             vector<int> macros = fooddb[food];
 
             if (eatsinday.find(meal) == eatsinday.end()) eatsinday[meal] = {0, 0, 0, 0};
-            for (int i = 0; i < 4; i++) eatsinday[meal][i] += macros[i];
-
+            for (int i = 0; i < 4; i++) {eatsinday[meal][i] += macros[i];}
             cout << food << " added successfully!\n";
         }
         cout << meal << " entries completed.\n";
-
         if (eatsinday.count("Breakfast") && eatsinday.count("Lunch") && eatsinday.count("Snacks") && eatsinday.count("Dinner")) displayDailySummary();
-        
         // save after every entered meal
         savedaysummary();
     }
 
-    void viewAndSelectCourse()
-    {
+    void viewAndSelectCourse(){
         ifstream in("courses.txt");
-        if (!in)
-        {
+        if (!in){
             cout << "\nSorry, no courses are available.\n";
             return;
         }
         vector<CourseInfo> courses;
         string line;
         cout << "\n--- Available Fitness Courses ---\n";
-        while (getline(in, line))
-        {
+        while (getline(in, line)){
             istringstream iss(line);
             string cat, cal_str, f_str, p_str, c_str, desc, cname;
             getline(iss, cat, ',');
@@ -386,21 +353,17 @@ public:
             courses.push_back({cat, cname, courseDetails.str()});
         }
         in.close();
-        if (courses.empty())
-        {
+        if (courses.empty()){
             cout << "No courses found in the file.\n";
             return;
         }
-        for (size_t i = 0; i < courses.size(); ++i) cout << i + 1 << ". " << courses[i].detailss << "\n---------------------------------\n";
+        for (size_t i = 0; i < courses.size(); ++i) {cout << i + 1 << ". " << courses[i].detailss << "\n---------------------------------\n";}
         cout << "Enter the number of the course you want to select (or 0 to cancel): ";
         int choice;
         cin >> choice;
-
         // error handling
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
-
-        if (choice > 0 && choice <= courses.size())
-        {
+        if (choice > 0 && choice <= courses.size()){
             const CourseInfo &selectedCourse = courses[choice - 1];
             ofstream out("enrollments.txt", ios::app);
             out << selectedCourse.category << "," << selectedCourse.counsn << "," << liveuser << "\n";
@@ -410,8 +373,7 @@ public:
         else cout << "\nInvalid selection.\n";
     }
 
-    void displayDailySummary()
-    {
+    void displayDailySummary(){
         time_t now = time(0);
         char *dt = ctime(&now);
 
@@ -419,9 +381,7 @@ public:
         cout << "\n====== Daily Nutrition Summary ======\n";
         cout << "Report generated on: " << dt;
         cout << "------------------------------------\n";
-
-        for (map<string, vector<int>>::iterator it = eatsinday.begin(); it != eatsinday.end(); ++it)
-        {
+        for (map<string, vector<int>>::iterator it = eatsinday.begin(); it != eatsinday.end(); ++it){
             cout << it->first << " -> Calories:" << it->second[0] << " Protein:" << it->second[1] << " Carbs:" << it->second[2] << " Fats:" << it->second[3] << "\n";
             totalCal += it->second[0];
             totalPro += it->second[1];
@@ -430,37 +390,29 @@ public:
         }
         cout << "------------------------------------\n";
         cout << "TOTAL -> Calories:" << totalCal << " Protein:" << totalPro << " Carbs:" << totalCarb << " Fats:" << totalFat << "\n";
-
         // compare with planned data
         compareWithPlan(totalCal, totalPro, totalCarb, totalFat);
     }
 
-    struct NutritionPlan
-    {
+    struct NutritionPlan{
         int calories;
         int protein;
         int carbs;
         int fats;
     };
-
     queue<NutritionPlan> nutritionQueue;
-
-    void prePlanNutrition()
-    {
+    void prePlanNutrition(){
         int days;
         cout << "\nEnter how many days you want to plan nutrition for: ";
         cin >> days;
-
-        if (cin.fail() || days <= 0)
-        {
+        if (cin.fail() || days <= 0){
             cout << "Invalid number of days.\n";
             cin.clear();
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
             return;
         }
 
-        for (int i = 1; i <= days; i++)
-        {
+        for (int i = 1; i <= days; i++){
             NutritionPlan plan;
             cout << "\n--- Enter plan for Day " << i << " ---\n";
             cout << "Calories: ";
@@ -473,72 +425,56 @@ public:
             cin >> plan.fats;
             nutritionQueue.push(plan);
         }
-
         cout << "\nNutrition plans added successfully for " << days << " day(s)!\n";
     }
 
-    void compareWithPlan(int totalCal, int totalPro, int totalCarb, int totalFat)
-    {
-        if (nutritionQueue.empty())
-        {
+    void compareWithPlan(int totalCal, int totalPro, int totalCarb, int totalFat){
+        if (nutritionQueue.empty()){
             cout << "\nNo planned nutrition data available.\n";
             return;
         }
-
         NutritionPlan todayPlan = nutritionQueue.front();
-
         cout << "\n----- Comparison with Planned Nutrition -----n";
         cout << "Planned -> Calories: " << todayPlan.calories
              << " | Protein: " << todayPlan.protein
              << " | Carbs: " << todayPlan.carbs
              << " | Fats: " << todayPlan.fats << "\n";
-
         cout << "Actual -> Calories: " << totalCal
              << " | Protein: " << totalPro
              << " | Carbs: " << totalCarb
              << " | Fats: " << totalFat << "\n";
-
         bool exceeded = false;
-        if (totalCal > todayPlan.calories)
-        {
+        if (totalCal > todayPlan.calories){
             cout << "Limit exceeded in Calories!\n";
             exceeded = true;
         }
-        if (totalPro > todayPlan.protein)
-        {
+        if (totalPro > todayPlan.protein){
             cout << " Limit exceeded in Protein!\n";
             exceeded = true;
         }
-        if (totalCarb > todayPlan.carbs)
-        {
+        if (totalCarb > todayPlan.carbs){
             cout << "Limit exceeded in Carbs!\n";
             exceeded = true;
         }
-        if (totalFat > todayPlan.fats)
-        {
+        if (totalFat > todayPlan.fats){
             cout << " Limit exceeded in Fats!\n";
             exceeded = true;
         }
         if (!exceeded) cout << "All nutrients are within planned limits!\n";
-
         // remove plan for the completed day
         nutritionQueue.pop();
     }
 
-    void savedaysummary()
-    {
+    void savedaysummary(){
         ofstream out(liveuser + "_summary.txt", ios::app);
 
         time_t now = time(0);
         char *dt = ctime(&now);
         string timeStr = dt;
         timeStr.erase(timeStr.find_last_not_of("\n\r") + 1);
-
         out << "Daily Summary for " << liveuser << ":\n";
-
         out << "Last Updated: " << timeStr << "\n";
         out << "-----------------------------\n";
-
         for (map<string, vector<int>>::iterator it = eatsinday.begin(); it != eatsinday.end(); it++) out << it->first << "," << it->second[0] << "," << it->second[1] << "," << it->second[2] << "," << it->second[3] << "\n";
         out.close();
     }
@@ -548,8 +484,7 @@ public:
 class CounsellorFeatures
 {
 public:
-    void coursecreate(const string &counsn)
-    {
+    void coursecreate(const string &counsn){
         string cat, desc;
         cout << "Enter Course Category (e.g., Weight Loss): ";
         getline(cin, cat);
@@ -562,20 +497,16 @@ public:
         cout << "Course created successfully.\n";
     }
 
-    void courseview(const string &counsn)
-    {
+    void courseview(const string &counsn){
         cout << "\n--- Courses Created By " << counsn << " ---\n";
         ifstream in("courses.txt");
-        if (!in)
-        {
+        if (!in){
             cout << "Could not open courses.txt file.\n";
             return;
         }
-
         string line;
         bool iscourse = false;
-        while (getline(in, line))
-        {
+        while (getline(in, line)){
             istringstream iss(line);
             string cat, desc, filecounsn;
 
@@ -583,8 +514,7 @@ public:
             getline(iss, desc, ',');
             getline(iss, filecounsn, ',');
 
-            if (filecounsn == counsn)
-            {
+            if (filecounsn == counsn){
                 cout << "Category: " << cat << "\n";
                 cout << "  Description: " << desc << "\n";
                 cout << "---------------------------------\n";
@@ -592,20 +522,16 @@ public:
             }
         }
         in.close();
-
-        if (!iscourse) cout << "You have not created any courses yet.\n";
+        if (!iscourse) {cout << "You have not created any courses yet.\n";}
     }
 
     // which users are in which courses
-    void usersenrolled(const string &counsn)
-    {
+    void usersenrolled(const string &counsn){
         map<string, string> courseDetailsMap;
         ifstream coursesFile("courses.txt");
-        if (coursesFile)
-        {
+        if (coursesFile){
             string line;
-            while (getline(coursesFile, line))
-            {
+            while (getline(coursesFile, line)){
                 istringstream iss(line);
                 string cat, desc, filecounsn;
                 getline(iss, cat, ',');
@@ -615,41 +541,33 @@ public:
             }
         }
         coursesFile.close();
-
         ifstream in("enrollments.txt");
-        if (!in)
-        {
+        if (!in){
             cout << "No enrollment data found.\n";
             return;
         }
-
         map<string, vector<string>> usersbycourse;
         set<string> enrolledun;
         string line;
-        while (getline(in, line))
-        {
+        while (getline(in, line)){
             istringstream iss(line);
             string courseCat, filecounsn, enrolledUsername;
             getline(iss, courseCat, ',');
             getline(iss, filecounsn, ',');
             getline(iss, enrolledUsername);
-            if (filecounsn == counsn)
-            {
+            if (filecounsn == counsn){
                 usersbycourse[courseCat].push_back(enrolledUsername);
                 enrolledun.insert(enrolledUsername);
             }
         }
         in.close();
-
-        if (usersbycourse.empty())
-        {
+        if (usersbycourse.empty()){
             cout << "No users have enrolled in your courses yet.\n";
             return;
         }
 
         cout << "\n--- Users Enrolled in Your Courses ---\n";
-        for (const auto &pair : usersbycourse)
-        {
+        for (const auto &pair : usersbycourse){
             string categoryofcourse = pair.first;
             string descofcourse = courseDetailsMap.count(categoryofcourse) ? courseDetailsMap[categoryofcourse] : "N/A";
 
@@ -657,24 +575,19 @@ public:
             for (int i = 0; i < pair.second.size(); i++) cout << "  - User: " << pair.second[i] << "\n"; 
         }
         cout << "--------------------------------------\n";
-
-        while (true)
-        {
+        while (true){
             cout << "\nEnter a username to view their summary (or type 'back' to return): ";
             string untofind;
             getline(cin, untofind);
             if (untofind == "back") break;
 
-            if (enrolledun.find(untofind) == enrolledun.end())
-            {
+            if (enrolledun.find(untofind) == enrolledun.end()){
                 cout << "Error: User '" << untofind << "' is not enrolled in your courses.\n";
                 continue;
             }
-
             string filename = untofind + "_summary.txt";
             ifstream summaries(filename);
-            if (summaries.is_open())
-            {
+            if (summaries.is_open()){
                 cout << "\n--- Displaying Summary for " << untofind << " ---\n";
                 string summaryline;
                 while (getline(summaries, summaryline)) cout << summaryline << endl;
@@ -701,21 +614,17 @@ private:
     size_t curri = 0;
 
 public:
-    void loadfooddb(const string &foodDB)
-    {
+    void loadfooddb(const string &foodDB){
         if (foodDB.empty()) return;
         ifstream file("foodDB.txt");
-        if (!file)
-        {
+        if (!file){
             cout << "Error: Cannot open " << foodDB << endl;
             return;
         }
         fooddetails.clear();
         string line;
-        while (getline(file, line))
-        {
-            if (line.empty()) continue;
-
+        while (getline(file, line)){
+            if (line.empty()){continue;}
             stringstream ss(line);
             string name, rest;
             getline(ss, name, ',');
@@ -731,12 +640,10 @@ public:
         file.close();
     }
 
-    void next10()
-    {
+    void next10(){
 
         loadfooddb("foodDB.txt");
-        if (fooddetails.empty())
-        {
+        if (fooddetails.empty()){
             cout << "Database is empty. Please load it first.\n";
             return;
         }
@@ -755,19 +662,16 @@ public:
 
         curri = end;
 
-        if (curri >= total)
-        {
+        if (curri >= total){
             cout << "End of database reached. Resetting...\n";
             curri = 0;
         }
         else cout << "Call next10() again to view the next 10 entries.\n";
     }
 
-    void searchfoodinfile()
-    {
+    void searchfoodinfile(){
         ifstream file("foodDB.txt");
-        if (!file)
-        {
+        if (!file){
             cout << "Error: Could not open foodDB.txt\n";
             return;
         }
@@ -781,8 +685,7 @@ public:
         string line;
         bool found = false;
 
-        while (getline(file, line))
-        {
+        while (getline(file, line)){
             if (line.empty()) continue;
 
             // split line into name and nutrient part
@@ -795,8 +698,7 @@ public:
             string nameLower = name;
             transform(nameLower.begin(), nameLower.end(), nameLower.begin(), ::tolower);
 
-            if (nameLower == query)
-            {
+            if (nameLower == query){
                 fooditem item;
                 item.name = name;
 
@@ -827,8 +729,7 @@ int main()
     extrasfornologin *nologinfunc = new extrasfornologin();
     Tracker *system = new Tracker();
 
-    while (true)
-    {
+    while (true){
         cout << "\n===========================================================================================\n";
         cout << "                                      N U T R I F I T                                      \n";
         cout << "                     where you can calculate, track, and maintain your Meal             \n";
@@ -840,19 +741,16 @@ int main()
         int a;
         cout << "Choose Option:";
         cin >> a;
-        if (cin.fail())
-        {
+        if (cin.fail()){
             cout << "Wrong input!!" << endl;
             return 0;
         }
         cin.ignore();
 
-        if (a == 1)
-        {
+        if (a == 1){
             string filename = "foodDB.txt";
             char choice;
-            do
-            {
+            do{
                 nologinfunc->next10();
                 cout << "\nShow next 10? (y/n): ";
                 cin >> choice;
@@ -862,14 +760,12 @@ int main()
             cout << "\nThank you for visiting\n";
         }
 
-        else if (a == 2)
-        {
+        else if (a == 2){
             nologinfunc->searchfoodinfile();
             break;
         }
 
-        else if (a == 3)
-        {
+        else if (a == 3){
             delete nologinfunc;
             system->loadfdb();
             cout << "Login as: 1.User 2.Counsellor\n";
@@ -877,13 +773,10 @@ int main()
             cin >> loginc;
 
             cin.ignore();
-            if (loginc == 1)
-            {
-                if (user.userlogin() == true)
-                {
+            if (loginc == 1){
+                if (user.userlogin() == true){
                     bool loggedIn = true;
-                    while (loggedIn)
-                    {
+                    while (loggedIn){
                         cout << "\n================================================\n";
                         cout << "                    NutriFit Store                ";
                         cout << "\n------------------------------------------------\n";
@@ -893,16 +786,14 @@ int main()
 
                         int x;
                         cin >> x;
-                        if (cin.fail())
-                        {
+                        if (cin.fail()){
                             cout << "Wrong input!! Please enter a number.\n";
                             cin.clear();
                             cin.ignore(numeric_limits<streamsize>::max(), '\n');
                             continue;
                         }
 
-                        switch (x)
-                        {
+                        switch (x){
                         case 1:
                             system->whatmeal();
                             break;
@@ -923,17 +814,14 @@ int main()
                     }
                 }
             }
-            else if (loginc == 2)
-            {
+            else if (loginc == 2){
                 Counsellor *counsloginned = Counsellor::counslogin();
-                if (counsloginned != nullptr)
-                {
+                if (counsloginned != nullptr){
                     counsloginned->dashdisplay();
                     CounsellorFeatures features;
                     bool counsellorLoggedIn = true;
 
-                    while (counsellorLoggedIn)
-                    {
+                    while (counsellorLoggedIn){
                         cout << "\n--- Counsellor Menu ---\n";
                         cout << "1. Create Course\n";
                         cout << "2. View My Courses\n";
@@ -944,8 +832,7 @@ int main()
                         cin >> cChoice;
                         cin.ignore();
 
-                        switch (cChoice)
-                        {
+                        switch (cChoice){
                             case 1:
                                 features.coursecreate(counsloginned->counsn);
                                 break;
@@ -969,8 +856,7 @@ int main()
             }
             else cout << "Invalid choice.\n";
         }
-        else if (a == 4)
-        {
+        else if (a == 4){
             cout << "Register as: 1.User 2.Counsellor\n";
             int regChoice;
             cin >> regChoice;
@@ -979,8 +865,7 @@ int main()
             else if (regChoice == 2) Counsellor::counsreg();
             else cout << "Invalid choice.\n";
         }
-        else if (a == 5)
-        {
+        else if (a == 5){
             delete nologinfunc;
             delete system;
             return 0;
