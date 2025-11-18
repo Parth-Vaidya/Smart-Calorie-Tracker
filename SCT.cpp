@@ -1,11 +1,6 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-// NAVIGATION TAB FOR OOPS
-// constructor
-// destructor
-// PureVirtualFunction
-// Inheritance
 class Account
 {
 protected:
@@ -666,7 +661,7 @@ public:
             cout << "End of database reached. Resetting...\n";
             curri = 0;
         }
-        else cout << "Call next10() again to view the next 10 entries.\n";
+        // else cout << "Call next10() again to view the next 10 entries.\n";
     }
 
     void searchfoodinfile(){
@@ -735,7 +730,7 @@ int main()
         cout << "                     where you can calculate, track, and maintain your Meal             \n";
         cout << "============================================================================================\n";
         cout << "     1. Chart Of Nutrition  |  2. Calculate Nutrition For Your Food  |  3. Log In          \n";
-        cout << "     4. Create Account       |  5. Exit                                                     \n";
+        cout << "     4. Create Account      |  5. Exit                                                     \n";
         cout << "--------------------------------------------------------------------------------------------\n";
 
         int a;
