@@ -1,34 +1,26 @@
 #include <bits/stdc++.h>
 using namespace std;
-
 class Account
 {
 protected:
     string username;
     string password;
-
 public:
-    // constructor
     Account(string u, string p){
         username = u;
         password = p;
     }
     string getun() const {return username;}
     string passwchecker() const {return password;}
-    // PureVirtualFunction
     virtual void dashdisplay() const = 0;
-    // destructor
     virtual ~Account() {}
 };
 
-// Inheritance: user from Account
 class User : public Account
 {
 private:
     string liveuser;
-
 public:
-
     User(string u, string p) : Account(u, p){
         username = u;
         password = p;
@@ -37,7 +29,7 @@ public:
     string getliveuser() const {return liveuser;}
     void dashdisplay() const override{
         cout << "\n--- Welcome to the User Dashboard, " << getun() << "! ---\n";
-        cout << "Here you can track meals and enroll in courses.\n";
+        cout << "Here your track meals and enroll in courses.\n";
     }
     void userreg(){
         bool exists = false;
@@ -63,9 +55,8 @@ public:
         }
         cout << "Enter Password:";
         getline(cin, p);
-        // save as username,password to the users.txt
         line = un + "," + p;
-        ofstream out("users.txt", ios::app); // points at last of line to append
+        ofstream out("users.txt", ios::app);
         if (!out){
             cout << "File could not be opened\n";
             return;
@@ -110,18 +101,15 @@ public:
     }
 };
 
-// Inheritance: counsellor from Account
 class Counsellor : public Account
 {
 public:
     string counsn;
-    // constructor
     Counsellor(string cname, string uname, string p) : Account(uname, p) {counsn = cname;}
     void dashdisplay() const override{
         cout << "\n--- Welcome to the Counsellor Dashboard, " << counsn << "! ---\n";
-        cout << "Here you can create courses and view user progress.\n";
+        cout << "Here create courses and view user progress.\n";
     }
-    // function to register a new counsellor
     static void counsreg(){
         string cname, uname, pass;
         cout << "-----Register New Counsellor-----\n";
@@ -152,9 +140,8 @@ public:
         ofstream out("counsellors.txt", ios::app);
         out << cname << "," << uname << "," << pass << "\n";
         out.close();
-        cout << "Counsellor registered successfully.\n";
+        cout << "Counsellor registered.\n";
     }
-    // function to log in a counsellor
     static Counsellor *counslogin(){
         string uname, pass;
         cout << "-------Counsellor LogIn-------\n";
@@ -184,7 +171,7 @@ public:
         return nullptr;
     }
 };
-// Tracker class contains all the functions for calorie tracking and storing logs
+
 class Tracker
 {
 private:
@@ -215,7 +202,6 @@ public:
     }
     void savefdb(){
         ofstream out("foodDB.txt");
-        // iterate on maps
         for (map<string, vector<int>>::const_iterator it = fooddb.begin(); it != fooddb.end(); it++) out << it->first << "," << it->second[0] << " " << it->second[1] << " " << it->second[2] << " " << it->second[3] << "\n";
         out.close();
     }
@@ -240,7 +226,6 @@ public:
             cout << "Food: ";
             getline(cin, food);
             if (food == "done") break;
-            // add new foods into database
             if (fooddb.find(food) == fooddb.end()){
                 cout << "Food not found in database. Enter macros for " << food << ":\n";
                 int cal, pro, carb, fat;
@@ -279,7 +264,6 @@ public:
         }
         cout << meal << " entries completed.\n";
         if (eatsinday.count("Breakfast") && eatsinday.count("Lunch") && eatsinday.count("Snacks") && eatsinday.count("Dinner")) displayDailySummary();
-        // save after every entered meal
         savedaysummary();
     }
     void viewAndSelectCourse(){
@@ -314,7 +298,6 @@ public:
         cout << "Enter the number of the course you want to select (or 0 to cancel): ";
         int choice;
         cin >> choice;
-        // error handling
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
         if (choice > 0 && choice <= courses.size()){
             const CourseInfo &selectedCourse = courses[choice - 1];
@@ -328,7 +311,6 @@ public:
     void displayDailySummary(){
         time_t now = time(0);
         char *dt = ctime(&now);
-
         int totalCal = 0, totalPro = 0, totalCarb = 0, totalFat = 0;
         cout << "\n====== Daily Nutrition Summary ======\n";
         cout << "Report generated on: " << dt;
@@ -342,7 +324,6 @@ public:
         }
         cout << "------------------------------------\n";
         cout << "TOTAL -> Calories:" << totalCal << " Protein:" << totalPro << " Carbs:" << totalCarb << " Fats:" << totalFat << "\n";
-        // compare with planned data
         compareWithPlan(totalCal, totalPro, totalCarb, totalFat);
     }
     struct NutritionPlan{
@@ -354,7 +335,7 @@ public:
     queue<NutritionPlan> nutritionQueue;
     void prePlanNutrition(){
         int days;
-        cout << "\nEnter how many days you want to plan nutrition for: ";
+        cout << "\nEnter days you want to plan nutrition for: ";
         cin >> days;
         if (cin.fail() || days <= 0){
             cout << "Invalid number of days.\n";
@@ -404,7 +385,6 @@ public:
             exceeded = true;
         }
         if (!exceeded) cout << "All nutrients are within planned limits!\n";
-        // remove plan for the completed day
         nutritionQueue.pop();
     }
     void savedaysummary(){
@@ -421,7 +401,6 @@ public:
     }
 };
 
-// features that counsellor can use in his dashboard
 class CounsellorFeatures
 {
 public:
@@ -463,7 +442,6 @@ public:
         if (!iscourse) {cout << "You have not created any courses yet.\n";}
     }
 
-    // which users are in which courses
     void usersenrolled(const string &counsn){
         map<string, string> courseDetailsMap;
         ifstream coursesFile("courses.txt");
@@ -574,7 +552,6 @@ public:
     }
 
     void next10(){
-
         loadfooddb("foodDB.txt");
         if (fooddetails.empty()){
             cout << "Database is empty. Please load it first.\n";
@@ -594,7 +571,6 @@ public:
             cout << "End of database reached. Resetting...\n";
             curri = 0;
         }
-        // else cout << "Call next10() again to view the next 10 entries.\n";
     }
     void searchfoodinfile(){
         ifstream file("foodDB.txt");
@@ -610,7 +586,6 @@ public:
         bool found = false;
         while (getline(file, line)){
             if (line.empty()) continue;
-            // split line into name and nutrient part
             size_t commaPos = line.find(',');
             if (commaPos == string::npos) continue;
             string name = line.substr(0, commaPos);
@@ -637,7 +612,6 @@ public:
     }
 };
 
-// the main function
 int main()
 {
     User user;
@@ -645,7 +619,7 @@ int main()
     while (true){
         cout << "\n=========================================================================================\n";
         cout << "                                      N U T R I F I T                                      \n";
-        cout << "                     where you can calculate, track, and maintain your Meal             \n";
+        cout << "                      where you calculate, track, and maintain your Meal                   \n";
         cout << "===========================================================================================\n";
         cout << "     1. Chart Of Nutrition  |  2. Calculate Nutrition For Your Food  |  3. Log In          \n";
         cout << "     4. Create Account      |  5. Exit                                                     \n";
@@ -673,13 +647,12 @@ int main()
         }
         else if (a == 3){
             delete nologinfunc;
-            // Ask for account type
             cout << "Login as: 1.User 2.Counsellor\n";
             int loginChoice;
             cin >> loginChoice;
             string name;
             cin.ignore();
-            if (loginChoice == 1){// User Login Logic
+            if (loginChoice == 1){
                 cout << "-------User LogIn-------\n";
                 cout << "Enter User name:";
                 cin>>name;
@@ -700,8 +673,7 @@ int main()
                             cin.ignore(numeric_limits<streamsize>::max(),'\n');
                             continue;
                         }
-                        switch (x)
-                        {
+                        switch (x){
                         case 1:
                             system->enterMeal();
                             break;
@@ -723,7 +695,7 @@ int main()
                     }
                 }
             }
-            else if (loginChoice == 2){// Counsellor Login Logic
+            else if (loginChoice == 2){
                 Counsellor *loggedInCounsellor = Counsellor::loginCounsellor();
                 if (loggedInCounsellor != nullptr){
                     loggedInCounsellor->displayDashboard();
@@ -756,7 +728,7 @@ int main()
                             cout << "Invalid choice.\n";
                         }
                     }
-                    delete loggedInCounsellor; // Clean up the object
+                    delete loggedInCounsellor;
                     loggedInCounsellor = nullptr;
                 }
             }
@@ -764,7 +736,7 @@ int main()
                 cout << "Invalid choice.\n";
             }
         }
-        else if (a == 4){// Ask for account type
+        else if (a == 4){
             cout << "Register as: 1.User 2.Counsellor\n";
             int regChoice;
             cin >> regChoice;
